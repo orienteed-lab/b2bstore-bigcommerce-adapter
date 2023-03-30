@@ -66,13 +66,13 @@
         "b2bstore",
         "bigcommerce"
     ],
-    "main": "./dist/b2bstore-boilerplate-adapter.umd.cjs",
-    "module": "./dist/b2bstore-boilerplate-adapter.js",
+    "main": "./dist/b2bstore-bigcommerce-adapter.umd.cjs",
+    "module": "./dist/b2bstore-bigcommerce-adapter.js",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "import": "./dist/b2bstore-boilerplate-adapter.js",
-            "require": "./dist/b2bstore-boilerplate-adapter.umd.cjs"
+            "import": "./dist/b2bstore-bigcommerce-adapter.js",
+            "require": "./dist/b2bstore-bigcommerce-adapter.umd.cjs"
         }
     },
     "files": [
