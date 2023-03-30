@@ -4,11 +4,11 @@
 
 </br>
 
-# B2BStore Boilerplate Adapter
+# B2BStore BigCommerce Adapter
 
 #### Table of Contents
 
--   [📢 What is B2BStore Boilerplate Adapter?](#-what-is-b2bstore-boilerplate-adapter)
+-   [📢 What is B2BStore BigCommerce Adapter?](#-what-is-b2bstore-bigcommerce-adapter)
 -   [⭐ Features](#-features)
 -   [💻 Usage in B2BStore](#-usage-in-b2bstore)
 -   [📖 Publish to _npmjs.com_](#-publish-to-npmjscom)
@@ -17,11 +17,11 @@
 
 </br>
 
-## 📢 What is B2BStore Boilerplate Adapter?
+## 📢 What is B2BStore BigCommerce Adapter?
 
-This repository serves as a starting point for creating adapters for the [B2BStore project](https://github.com/orienteed/b2bstore). The adapters abstract the connection layer of the storefront and allow for connecting to different backends.
+This repository contains the code for the _b2bstore-bigcommerce-adapter_ library. This library is an adapter for the [B2BStore project](https://github.com/orienteed/b2bstore). The adapters abstract the connection layer of the storefront and allow for connecting to different backends.
 
-This boilerplate includes a strong base architecture, and the necessary code to develop the library with the [B2BStore project](https://github.com/orienteed/b2bstore) and publish to _npmjs.com_, while following best practices for the technologies used.
+This adapter includes a strong base architecture, the expected interfaces in the responses, the queries and mutations to communicate with the backend and the necessary code to develop the library with the [B2BStore project](https://github.com/orienteed/b2bstore) and publish to _npmjs.com_, while following best practices for the technologies used.
 
 </br>
 
@@ -29,15 +29,15 @@ This boilerplate includes a strong base architecture, and the necessary code to 
 
 ### &emsp;**Base architecture of the adapters**
 
-The boilerplate provides a solid base architecture for creating adapters for the B2BStore storefront. This includes the necessary files and folders to organize your code, as well as a starting point for the implementation of the adapter.
+The adapter provides a solid base architecture for creating adapters for the B2BStore storefront. This includes the necessary files and folders to organize your code, as well as a starting point for the implementation of the adapter.
 
 ### &emsp;**Expected interfaces in the responses**
 
-The boilerplate includes the expected interfaces that the adapter should implement in order to communicate with the [B2BStore project](https://github.com/orienteed/b2bstore). These interfaces provide a clear and consistent way for the adapter to communicate with the storefront, making it easier to integrate and test.
+The adapter includes the expected interfaces that the adapter should implement in order to communicate with the [B2BStore project](https://github.com/orienteed/b2bstore). These interfaces provide a clear and consistent way for the adapter to communicate with the storefront, making it easier to integrate and test.
 
 ### &emsp;**Configuration of ESlint, Prettier and Husky**
 
-The boilerplate has a pre-configured setup for linting and formatting your code using [ESlint](https://eslint.org/), [Prettier](https://prettier.io/) and [Husky](https://typicode.github.io/husky/#/). This helps to ensure that your code follows best practices and is easy to read and maintain.
+The adapter has a pre-configured setup for linting and formatting your code using [ESlint](https://eslint.org/), [Prettier](https://prettier.io/) and [Husky](https://typicode.github.io/husky/#/). This helps to ensure that your code follows best practices and is easy to read and maintain.
 
 ### &emsp;**Usage of the library in the [B2BStore project](https://github.com/orienteed/b2bstore)**
 
@@ -51,11 +51,11 @@ The _"main"_ branch of the repository includes the code necessary to upload the 
 
 ## 💻 Usage in B2BStore
 
-The _b2bstore-boilerplate-adapter library_ provides a powerful and flexible adapter for the [B2BStore project](https://github.com/orienteed/b2bstore). This section will explain how to add the library to your B2BStore project and how to use it.
+The _b2bstore-bigcommerce-adapter library_ provides a powerful and flexible adapter for the [B2BStore project](https://github.com/orienteed/b2bstore). This section will explain how to add the library to your B2BStore project and how to use it.
 
 &emsp;**Add the submodule**
 
-To add the _b2bstore-boilerplate-adapter_ repository to B2BStore, use git submodules to add the library as a submodule in the app/packages/adapters folder. This can be done by running the following commands in your project's root directory:
+To add the _b2bstore-bigcommerce-adapter_ repository to B2BStore, use git submodules to add the library as a submodule in the app/packages/adapters folder. This can be done by running the following commands in your project's root directory:
 
 ```bash
 git submodule add -b develop <adapter_repository> app/packages/adapters/<adapter_name>
@@ -73,7 +73,7 @@ git submodule update --init --recursive
 
 **Warning!** If you have added the module as above, you should already be in the _"develop"_ branch, so you can skip to the next step.
 
-The _b2bstore-boilerplate-adapter_ repository is designed to be used with the _"develop"_ branch with B2BStore. To start working with the adapter, switch to the _"develop"_ branch by running the following command in your adapter's root directory:
+The _b2bstore-bigcommerce-adapter_ repository is designed to be used with the _"develop"_ branch with B2BStore. To start working with the adapter, switch to the _"develop"_ branch by running the following command in your adapter's root directory:
 
 ```bash
 git checkout develop
@@ -82,13 +82,13 @@ git checkout develop
 Once you are on the _"develop"_ branch, you can start using the adapter by calling it with the `package.json` name indicated. For example, in your code, you can import the library using the following syntax:
 
 ```javascript
-import * as boilerplate from '@b2bstore/boilerplate-adapter';
+import * as bigCommerceAdapter from '@b2bstore/bigcommerce-adapter';
 ```
 
 You can also import specific modules or classes from the library like this:
 
 ```javascript
-import { getProducts } from '@b2bstore/boilerplate-adapter';
+import { getProducts } from '@b2bstore/bigcommerce-adapter';
 ```
 
 </br>
@@ -149,7 +149,7 @@ npm publish --scope @b2bstore --access public
 
 ## 📅 Update your adapter
 
-It's important to note that as the [B2BStore project](https://github.com/orienteed/b2bstore) evolves, updates to the _b2bstore-boilerplate-adapter_ repository may be made to reflect changes in the expected interfaces and other aspects of the storefront. It's the responsibility of the developers who have forked the repository to keep their adapters up-to-date with these changes by regularly checking for updates and merging them into their own repository. To do this, you can use the following commands to update your repository with the latest changes from the _b2bstore-boilerplate-adapter_ repository:
+It's important to note that as the [B2BStore project](https://github.com/orienteed/b2bstore) evolves, updates to the _b2bstore-bigcommerce-adapter_ repository may be made to reflect changes in the expected interfaces and other aspects of the storefront. It's the responsibility of the developers who have forked the repository to keep their adapters up-to-date with these changes by regularly checking for updates and merging them into their own repository. To do this, you can use the following commands to update your repository with the latest changes from the _b2bstore-bigcommerce-adapter_ repository:
 
 &emsp;**Add the remote repository, and call it "upstream"**
 

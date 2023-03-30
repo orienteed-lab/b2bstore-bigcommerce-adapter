@@ -4,7 +4,7 @@
 
 </br>
 
-# B2BStore Boilerplate Adapter Documentation
+# B2BStore BigCommerce Adapter Documentation
 
 #### Table of Contents
 

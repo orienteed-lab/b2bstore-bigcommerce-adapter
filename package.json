@@ -1,9 +1,9 @@
 {
-    "name": "@b2bstore/boilerplate-adapter",
+    "name": "@b2bstore/bigcommerce-adapter",
     "type": "module",
     "version": "0.0.0",
     "author": "Orienteed SLU",
-    "description": "Boilerplate adapter for B2BStore",
+    "description": "BigCommerce adapter for B2BStore",
     "homepage": "https://b2bstore.io",
     "license": "OSL-3.0",
     "scripts": {
@@ -55,16 +55,16 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/orienteed/b2bstore-boilerplate-adapter.git"
+        "url": "git+https://github.com/orienteed-lab/b2bstore-bigcommerce-adapter.git"
     },
     "bugs": {
-        "url": "https://github.com/orienteed/b2bstore-boilerplate-adapter/issues"
+        "url": "https://github.com/orienteed-lab/b2bstore-bigcommerce-adapter/issues"
     },
     "keywords": [
         "adapter",
         "api",
         "b2bstore",
-        "boilerplate"
+        "bigcommerce"
     ],
     "main": "./src/index.ts"
 }

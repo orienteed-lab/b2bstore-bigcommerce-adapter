@@ -7,8 +7,8 @@ export default defineConfig({
     build: {
         lib: {
             entry: resolve(__dirname, 'src/index.ts'),
-            name: 'b2bstore-boilerplate-adapter',
-            fileName: 'b2bstore-boilerplate-adapter'
+            name: 'b2bstore-bigcommerce-adapter',
+            fileName: 'b2bstore-bigcommerce-adapter'
         },
         rollupOptions: {
             external: Object.keys(packageJson.peerDependencies)
