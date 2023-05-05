@@ -24,7 +24,7 @@ const GetProductDetailForProductPageByUrlKey = (clientProps: ClientProps) => (
         }
     });
 
-    console.log('antes del parser', data);
+    //console.log('antes del parser', data);
 
     let parsedData = undefined;
     if (data) {
@@ -35,7 +35,7 @@ const GetProductDetailForProductPageByUrlKey = (clientProps: ClientProps) => (
         // }
     }
 
-    console.log('despues del parser', parsedData);
+    //console.log('despues del parser', parsedData);
 
     return { data: parsedData, loading, error, refetch };
     // return { data, loading, error, refetch };

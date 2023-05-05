@@ -26,6 +26,7 @@ export const getProductDetailForProductPageByUrlKeyParser = (data: any): GetProd
                     })),
                     categories: data.site.route.node.categories.edges.map((category: any) => ({
                         uid: category.node.id,
+                        id: category.node.entityId,
                         breadcrumbs: [
                             {
                                 category_id: category.node.id
@@ -137,7 +138,7 @@ export const getProductDetailForProductPageByUrlKeyParser = (data: any): GetProd
                                                           __typename: 'AttributeOption',
                                                           uid: option.node.entityId,
                                                           label: option.node.displayName,
-                                                          is_default: option.node.values.edges.node.isDefault // TODO_B2B: Review
+                                                          is_default: false//option.node.values.edges.node.isDefault // TODO_B2B: Review
                                                       }
                                                   ]
                                               },

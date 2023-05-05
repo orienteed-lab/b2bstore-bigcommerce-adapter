@@ -26,6 +26,7 @@ export const GET_PRODUCT_DETAIL_FOR_PRODUCT_PAGE_BY_URL_KEY = gql`
                             edges {
                                 node {
                                     id
+                                    entityId
                                 }
                             }
                         }
