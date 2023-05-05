@@ -22,33 +22,29 @@ const GetRegions = (clientProps: ClientProps) => (resolverProps: GetRegionsProps
         const fetchData = async () => {
             if (country_iso2) {
                 setLoading(true);
-                try {
                     restClient(`/api/v2/countries?country_iso2=${country_iso2}`, {
                         method: 'GET',
                         headers: {
                             backendTechnology: 'bigcommerce'
                         }
                     }).then((country) => {
-                        console.log('Country', country);
                         restClient(`/api/v2/countries/${country[0].id}/states`, {
                             method: 'GET',
                             headers: {
                                 backendTechnology: 'bigcommerce'
                             }
                         }).then((rawData) => {
-                            setData(rawData);
+                            setData(rawData)
                         });
+                    }).catch((err) => {
+                        setError(err);
+                    }).finally(() => {
+                        setLoading(false);
                     });
-                } catch (err: any) {
-                    setError(err);
-                }
-                setLoading(false);
             }
         };
         fetchData();
     }, [country_iso2]);
-
-    console.log('antes del parser', data);
 
     let parsedData = undefined;
     if (data) {
@@ -58,8 +54,6 @@ const GetRegions = (clientProps: ClientProps) => (resolverProps: GetRegionsProps
         //     console.error(e);
         // }
     }
-
-    console.log('despues del parser', parsedData);
 
     return { data: parsedData, loading, error };
 };
