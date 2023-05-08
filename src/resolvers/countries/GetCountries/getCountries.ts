@@ -14,36 +14,21 @@ const GetCountries = (clientProps: ClientProps) => (resolverProps: GetCountriesQ
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
-                restClient(
-                    `/api/v2/countries/count`,
-                    {
-                        method: 'GET',
-                        headers: {
-                            backendTechnology: 'bigcommerce'
-                        }
+            try {
+                const rawData = await restClient(`/api/v2/countries?limit=250`, {
+                    method: 'GET',
+                    headers: {
+                        backendTechnology: 'bigcommerce'
                     }
-                ).then((n) => {
-                    restClient(
-                        `/api/v2/countries?limit=${n.count}`,
-                        {
-                            method: 'GET',
-                            headers: {
-                                backendTechnology: 'bigcommerce'
-                            }
-                        }
-                    ).then((rawData) => {
-                        setData(rawData);
-                    });
-                }).catch((err) => {
-                    setError(err)
-                }).finally(() =>{
-                    setLoading(false);
                 });
-        }
+                setData(rawData);
+            } catch (err) {
+                setError(err);
+            }
+            setLoading(false);
+        };
         fetchData();
     }, []);
-
-    console.log('antes del parser', data);
 
     let parsedData = undefined;
     if (data) {
@@ -54,10 +39,7 @@ const GetCountries = (clientProps: ClientProps) => (resolverProps: GetCountriesQ
         // }
     }
 
-    console.log('despues del parser', parsedData);
-
-
-    return { data: parsedData, loading, error};
+    return { data: parsedData, loading, error };
     // return { data, loading, error};
 };
 
