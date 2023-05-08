@@ -34,7 +34,6 @@ const GetProductAggregationsFilteredByCategory =
                         }
                     }
                 });
-                console.log('Antes del parser', data);
 
                 if (data) {
                     // try {
@@ -44,7 +43,6 @@ const GetProductAggregationsFilteredByCategory =
                     // }
                 }
 
-                console.log('Después del parser', parsedData);
             }
         },[categoryIdFilter]);
 
