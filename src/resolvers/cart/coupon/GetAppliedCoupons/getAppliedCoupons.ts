@@ -1,10 +1,49 @@
 import { ClientProps } from 'src';
 import { GetAppliedCouponsQueryVariables } from '@schema';
 
-const GetAppliedCoupons = (clientProps: ClientProps) => (resolverProps: GetAppliedCouponsQueryVariables) => {
-    // Look docs for more info about how to fill this function
+import { getAppliedCouponsParser } from './getAppliedCouponsParser';
+import { useEffect, useState } from 'react';
 
-    return { data: {}, loading: false, error: undefined };
+const GetAppliedCoupons = (clientProps: ClientProps) => (resolverProps: GetAppliedCouponsQueryVariables) => {
+    const { restClient } = clientProps;
+    const { cartId }  = resolverProps;
+ 
+    const [loading, setLoading] = useState(true);
+    const [data, setData] = useState<any>(null);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                const rawData = await restClient(
+                    `/api/v3/checkouts/${cartId}?include=cart.line_items.physical_items.options,cart.line_items.digital_items.options`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            backendTechnology: 'bigcommerce'
+                        }
+                    }
+                );
+                
+                setData(rawData);
+            } catch (err: any) {
+                setError(err);
+            }
+            setLoading(false);
+        };
+        fetchData();
+    }, []);
+
+
+    let parsedData = undefined;
+    if (data) {
+
+        parsedData = getAppliedCouponsParser(data);
+
+    }
+
+    return { data: parsedData, loading, error };
 };
 
 export default GetAppliedCoupons;
