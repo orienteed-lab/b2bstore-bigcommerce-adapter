@@ -6,37 +6,32 @@ import DEFAULT_OPERATIONS from './getProductItemsFilteredByCategory.gql';
 
 const GetProductItemsFilteredByCategory =
     (clientProps: ClientProps) => (resolverProps: GetProductItemsFilteredByCategoryQueryVariables) => {
-        const { useQuery, mergeOperations } = clientProps;
-        const { categoryIdFilter } = resolverProps;
+        const { useLazyQuery, mergeOperations } = clientProps;
 
         const operations = mergeOperations(DEFAULT_OPERATIONS);
         const { getProductItemsFilteredByCategoryQuery } = operations;
 
-        let parsedData = undefined;
-
-        const { data, loading, error } = useQuery(getProductItemsFilteredByCategoryQuery, {
+        const [getFilters, { data }] = useLazyQuery(getProductItemsFilteredByCategoryQuery, {
+            fetchPolicy: 'cache-and-network',
+            nextFetchPolicy: 'cache-first',
             context: {
                 headers: {
                     backendTechnology: ['bigcommerce']
                 }
-            },
-            variables: {
-                category: categoryIdFilter
             }
         });
 
-        //console.log('antes del parser', data);
+        let parsedData = undefined;
 
         if (data) {
-            // try {
-            parsedData = getProductItemsFilteredByCategoryParser(data);
-            // } catch (e) {
-            //     console.error(e);
-            // }
+            try {
+                parsedData = getProductItemsFilteredByCategoryParser(data);
+            } catch (e) {
+                console.error(e);
+            }
         }
-        //console.log('despues del parser', parsedData);
-        return { data: parsedData, loading, error };
-        //return { data, loading, error };
+
+        return { getFilters, data: parsedData };
     };
 
 export default GetProductItemsFilteredByCategory;
