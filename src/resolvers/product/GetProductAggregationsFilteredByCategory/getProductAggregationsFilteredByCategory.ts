@@ -3,50 +3,34 @@ import { GetProductAggregationsFilteredByCategoryQueryVariables } from '@schema'
 
 import { getProductAggregationsFilteredByCategoryParser } from './getProductAggregationsFilteredByCategoryParser';
 import DEFAULT_OPERATIONS from './getProductAggregationsFilteredByCategory.gql';
-import { useEffect, useState } from 'react';
 
 const GetProductAggregationsFilteredByCategory =
     (clientProps: ClientProps) => (resolverProps: GetProductAggregationsFilteredByCategoryQueryVariables) => {
         const { useLazyQuery, mergeOperations } = clientProps;
-        const { categoryIdFilter } = resolverProps;
-        const filterId = categoryIdFilter ? Number(categoryIdFilter.eq) : null;
 
         const operations = mergeOperations(DEFAULT_OPERATIONS);
         const { getProductAggregationsFilteredByCategoryQuery } = operations;
 
-        const [getFilters, { data, loading, error }] = useLazyQuery(getProductAggregationsFilteredByCategoryQuery, {
+        const [getFilters, { data }] = useLazyQuery(getProductAggregationsFilteredByCategoryQuery, {
             fetchPolicy: 'cache-and-network',
-            nextFetchPolicy: 'cache-first'
-        });
-        const [parsedData, setParsedData] = useState(undefined);
-
-        useEffect(() => {
-            if (categoryIdFilter) {
-                getFilters({
-                    context: {
-                        headers: {
-                            backendTechnology: ['bigcommerce']
-                        }
-                    },
-                    variables: {
-                        category: {
-                            categoryEntityIds: filterId
-                        }
-                    }
-                });
-
-                if (data) {
-                    // try {
-                    setParsedData(getProductAggregationsFilteredByCategoryParser(data));
-                    // } catch (e) {
-                    //     console.error(e);
-                    // }
+            nextFetchPolicy: 'cache-first',
+            context: {
+                headers: {
+                    backendTechnology: ['bigcommerce']
                 }
-
             }
-        },[categoryIdFilter]);
+        });
+        let parsedData = undefined;
 
-        return { data: parsedData, loading, error };
+        if (data) {
+            try {
+            parsedData = getProductAggregationsFilteredByCategoryParser(data);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        return { getFilters, data: parsedData };
     };
 
 export default GetProductAggregationsFilteredByCategory;
