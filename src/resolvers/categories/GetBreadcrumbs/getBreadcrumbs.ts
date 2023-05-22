@@ -1,10 +1,35 @@
 import { ClientProps } from 'src';
 import { GetBreadcrumbsQueryVariables } from '@schema';
+import { getBreadcrumbsParser } from './getBreadcrumbsParser';
+import DEFAULT_OPERATIONS from './getBreadcrumbs.gql';
 
 const GetBreadcrumbs = (clientProps: ClientProps) => (resolverProps: GetBreadcrumbsQueryVariables) => {
-    // Look docs for more info about how to fill this function
+    const { useQuery, mergeOperations } = clientProps;
+    const { category_id } = resolverProps;
 
-    return { data: {}, loading: false, error: undefined };
+    const operations = mergeOperations(DEFAULT_OPERATIONS);
+    const { getBreadcrumbsQuery } = operations;
+
+
+    const { data, loading, error } = useQuery(getBreadcrumbsQuery, {
+        context: {
+            headers: {
+                backendTechnology: ['bigcommerce']
+            }
+        },
+        variables: {
+            id: category_id
+        }
+    });
+
+    let parsedData = undefined;
+
+
+    if (data) {
+        parsedData = getBreadcrumbsParser(data);
+    }
+
+    return { data: parsedData, loading, error };
 };
 
 export default GetBreadcrumbs;
