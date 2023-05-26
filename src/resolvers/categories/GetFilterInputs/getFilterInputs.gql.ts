@@ -1,7 +1,22 @@
 import { gql } from '@apollo/client';
 
 export const GET_FILTER_INPUTS = gql`
-    # Your query here
+    query getFilterInputs {
+  site {
+    search {
+      searchProducts(filters:{searchTerm:""}) {
+        filters {
+          edges {
+            node {
+              name
+              __typename
+            }
+          }
+        }
+      }
+    }
+  }
+}
 `;
 
 export default {

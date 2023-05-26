@@ -1,9 +1,32 @@
 import { ClientProps } from 'src';
+import { getFilterInputsParser } from './getFilterInputsParser';
+import DEFAULT_OPERATIONS from './getFilterInputs.gql';
+
 
 const GetFilterInputs = (clientProps: ClientProps) => () => {
-    // Look docs for more info about how to fill this function
+    const { useQuery, mergeOperations } = clientProps;
 
-    return { data: {}, loading: false, error: undefined };
+
+    const operations = mergeOperations(DEFAULT_OPERATIONS);
+    const { getFilterInputsQuery } = operations;
+
+
+    const { data, loading, error } = useQuery(getFilterInputsQuery, {
+        context: {
+            headers: {
+                backendTechnology: ['bigcommerce']
+            }
+        }
+    });
+
+    let parsedData = undefined;
+
+
+    if (data) {
+        parsedData = getFilterInputsParser(data);
+    }
+
+    return { data: parsedData, loading, error };
 };
 
 export default GetFilterInputs;
