@@ -1,7 +1,35 @@
 import { gql } from '@apollo/client';
 
 export const GET_AVAILABLE_SORT_METHODS_BY_SEARCH = gql`
-    # Your query here
+    query getCategoryIdOfProductSearch($search: SearchProductsFiltersInput!) {
+        site {
+            search {
+                searchProducts(filters: $search) {
+                    products {
+                        edges {
+                            node {
+                                entityId
+                                categories(first: 1) {
+                                    edges {
+                                        node {
+                                            entityId
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    filters {
+                        edges {
+                            node {
+                                name
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 `;
 
 export default {
