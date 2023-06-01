@@ -1,7 +1,13 @@
 import { gql } from '@apollo/client';
 
 export const SIGN_IN = gql`
-    # Your query here
+    mutation SignIn($email: String!, $password: String!) {
+        login(email: $email, password: $password) {
+            customer {
+                entityId
+            }
+        }
+    }
 `;
 
 export default {
