@@ -19,7 +19,6 @@ const AddProductToCart =
 
         const addProductToCart = async ({ variables }) => {
             let parsedData = undefined;
-            console.log(variables.product.sku);
             const { data } = await getId({
                 context: {
                     headers: {
@@ -27,7 +26,7 @@ const AddProductToCart =
                     }
                 },
                 variables: {
-                    sku: 'SM13'
+                    sku: variables.product.sku
                 }
             });
 
@@ -35,7 +34,6 @@ const AddProductToCart =
                 const prodId = data.site.product.entityId;
                 const varId = data.site.product.variants.edges[0].node.entityId;
                 parsedData = JSON.stringify(addProductToCartParser(variables, prodId, varId));
-                console.log('PIUM PIUM', parsedData);
                 setLoading(true);
                 restClient(`/api/v3/carts/${variables.cartId}/items`, {
                     method: 'POST',
@@ -44,9 +42,6 @@ const AddProductToCart =
                     },
                     body: parsedData
                 })
-                    .then((data) => {
-                        console.log(data);
-                    })
                     .catch((err) => {
                         setError(err);
                     })
@@ -59,7 +54,6 @@ const AddProductToCart =
         const addProductToCartVoid = async () => {
             let parsedData = undefined;
             const variables = { cartId, product };
-            console.log(variables.product.sku);
             const { data } = await getId({
                 context: {
                     headers: {
@@ -67,7 +61,7 @@ const AddProductToCart =
                     }
                 },
                 variables: {
-                    sku: 'SM13'
+                    sku: variables.product.sku
                 }
             });
 
@@ -75,7 +69,6 @@ const AddProductToCart =
                 const prodId = data.site.product.entityId;
                 const varId = data.site.product.variants.edges[0].node.entityId;
                 parsedData = JSON.stringify(addProductToCartParser(variables, prodId, varId));
-                console.log('PIUM PIUM', parsedData);
                 setLoading(true);
                 restClient(`/api/v3/carts/${variables.cartId}/items`, {
                     method: 'POST',
