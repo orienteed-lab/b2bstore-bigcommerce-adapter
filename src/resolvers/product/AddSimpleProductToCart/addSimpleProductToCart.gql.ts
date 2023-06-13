@@ -1,9 +1,15 @@
 import { gql } from '@apollo/client';
 
-export const ADD_SIMPLE_PRODUCT_TO_CART = gql`
-    # Your query here
+export const GET_PRODUCT_ID_WITH_SKU = gql`
+    query getProductIdWithSKU($sku:String) {
+    site {
+        product(sku:$sku) {
+            entityId
+        }
+    }
+}
 `;
 
 export default {
-    addSimpleProductToCartMutation: ADD_SIMPLE_PRODUCT_TO_CART
+    getProductIdWithSkuQuery: GET_PRODUCT_ID_WITH_SKU
 };
