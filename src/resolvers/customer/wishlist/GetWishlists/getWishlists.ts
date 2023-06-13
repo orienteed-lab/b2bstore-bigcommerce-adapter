@@ -1,9 +1,31 @@
 import { ClientProps } from 'src';
 
-const GetWishlists = (clientProps: ClientProps) => () => {
-    // Look docs for more info about how to fill this function
+import { getWishlistsParser } from './getWishlistsParser';
+import DEFAULT_OPERATIONS from './getWishlists.gql';
 
-    return { data: {}, loading: false, error: undefined };
+const GetWishlists = (clientProps: ClientProps) => () => {
+    const { mergeOperations, useQuery } = clientProps;
+
+    const operations = mergeOperations(DEFAULT_OPERATIONS);
+    const { getWishlistsQuery } = operations;
+
+    const { data, error, loading } = useQuery(getWishlistsQuery, {
+        fetchPolicy: 'cache-and-network',
+        nextFetchPolicy: 'cache-first',
+        context: {
+            headers: {
+                backendTechnology: ['bigcommerce']
+            }
+        }
+    });
+
+    let parsedData = undefined;
+    if (data) {
+        parsedData = getWishlistsParser(data);
+    }
+
+    return { data: parsedData, loading, error };
+
 };
 
 export default GetWishlists;
