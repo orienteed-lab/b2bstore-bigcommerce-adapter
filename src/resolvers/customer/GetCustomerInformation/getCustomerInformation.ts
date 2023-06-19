@@ -6,9 +6,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { parse } from 'graphql';
 
 interface GetCustomerInformationProps {
-    vars: { lazy: boolean };
+    vars: { lazy: boolean; isSignedIn: boolean };
 }
-const GetCustomerInformation = (clientProps: ClientProps) => (resolverProps: GetCustomerInformationProps) => {
+const GetCustomerInformation = (clientProps: ClientProps) => (resolverProps: GetCustomerInformationProps = {vars: {lazy: false, isSignedIn: true}}) => {
     const { useAwaitQuery, mergeOperations, restClient } = clientProps;
 
     const operations = mergeOperations(DEFAULT_OPERATIONS);
@@ -20,6 +20,7 @@ const GetCustomerInformation = (clientProps: ClientProps) => (resolverProps: Get
     const performQuery = useAwaitQuery(getCustomerInformationQuery);
 
     const customerInformation = useCallback(async () => {
+       if(vars.isSignedIn){
         setLoading(true);
         const { data: dataCustomer } = await performQuery({
             context: {
@@ -45,6 +46,7 @@ const GetCustomerInformation = (clientProps: ClientProps) => (resolverProps: Get
         }
         setError(error);
         return { data };
+    }
     }, [performQuery, restClient, getCustomerInformationParser]);
 
     useEffect(() => {
