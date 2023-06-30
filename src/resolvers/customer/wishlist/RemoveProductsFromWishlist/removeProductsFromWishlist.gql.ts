@@ -1,7 +1,23 @@
 import { gql } from '@apollo/client';
 
 export const REMOVE_PRODUCTS_FROM_WISHLIST = gql`
-    # Your query here
+    mutation removeProductsFromWishlist($wishlistId: Int!, $wishlistItemsId: [Int!]!) {
+        wishlist {
+            deleteWishlistItems(input:{entityId:$wishlistId, itemEntityIds:$wishlistItemsId}) {
+                result {
+                    entityId
+                    items {
+                        edges {
+                            node {
+                                productEntityId
+                                entityId
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 `;
 
 export default {
