@@ -1,10 +1,32 @@
 import { ClientProps } from 'src';
 import { RemoveItemFromCartMutationVariables } from '@schema';
 
-const RemoveItemFromCart = (clientProps: ClientProps) => (resolverProps: RemoveItemFromCartMutationVariables) => {
-    // Look docs for more info about how to fill this function
+import { useState } from 'react';
 
-    return { data: {}, loading: false, error: undefined };
+const RemoveItemFromCart = (clientProps: ClientProps) => (resolverProps: RemoveItemFromCartMutationVariables) => {
+    const { restClient } = clientProps;
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [called, setCalled] = useState(false);
+
+    const removeItemFromCart = ({ variables }) => {
+        setLoading(true);
+        setCalled(true);
+        restClient(`/api/v3/carts/${variables.cartId}/items/${variables.itemId}`, {
+            method: 'DELETE',
+            headers: {
+                backendTechnology: 'bigcommerce'
+            }
+        })
+            .catch((err) => {
+                setError(err);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    };
+
+    return { removeItemFromCart, loading, error, called };
 };
 
 export default RemoveItemFromCart;
