@@ -1,9 +1,13 @@
 import { gql } from '@apollo/client';
 
-export const ADD_NEW_CUSTOMER_ADDRESS = gql`
-    # Your query here
+export const GET_CUSTOMER_ID = gql`
+    query getCustomerId {
+        customer {
+            entityId
+        }
+    }
 `;
 
 export default {
-    addNewCustomerAddressToAddressBookMutation: ADD_NEW_CUSTOMER_ADDRESS
+    getCustomerIdQuery: GET_CUSTOMER_ID
 };
