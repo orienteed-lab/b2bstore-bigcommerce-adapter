@@ -1,7 +1,16 @@
 import { gql } from '@apollo/client';
 
 export const CREATE_WISHLIST = gql`
-    # Your query here
+    mutation ($input :  CreateWishlistInput!){
+        wishlist {
+            createWishlist (input: $input){
+                result {
+                    __typename
+                    entityId
+                }
+            }
+        }
+    }
 `;
 
 export default {

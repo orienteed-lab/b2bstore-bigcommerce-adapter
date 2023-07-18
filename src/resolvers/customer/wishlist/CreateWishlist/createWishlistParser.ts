@@ -1,6 +1,12 @@
 import { CreateWishlistMutation } from '@schema';
 
 export const createWishlistParser = (data: any): CreateWishlistMutation => {
-    // Your parser logic here
-    return data;
+    
+    return {
+        createWishlist: {
+            wishlist:{
+                id: data.wishlist.createWishlist.result.entityId
+            } 
+        }
+    };
 };
