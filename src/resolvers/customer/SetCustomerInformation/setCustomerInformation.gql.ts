@@ -1,9 +1,15 @@
 import { gql } from '@apollo/client';
 
-export const SET_CUSTOMER_INFORMATION = gql`
-    # Your query here
+export const SIGN_IN = gql`
+    mutation SignIn($email: String!, $password: String!) {
+        login(email: $email, password: $password) {
+            customer {
+                entityId
+            }
+        }
+    }
 `;
 
 export default {
-    setCustomerInformationMutation: SET_CUSTOMER_INFORMATION
+    signInMutation: SIGN_IN
 };
