@@ -132,7 +132,8 @@ import {
     shareSavedCarts,
     getStoreConfig,
     getWebkulPaymentCreditSystemConfig,
-    generateToken
+    generateToken,
+    isEmailAvailable
 } from './resolvers';
 
 export interface ClientProps {
@@ -280,6 +281,7 @@ export const getResolvers = (clientProps: ClientProps) => {
         shareSavedCarts: shareSavedCarts(clientProps),
         getStoreConfig: getStoreConfig(clientProps),
         getWebkulPaymentCreditSystemConfig: getWebkulPaymentCreditSystemConfig(clientProps),
-        generateToken: generateToken(clientProps)
+        generateToken: generateToken(clientProps),
+        isEmailAvailable: isEmailAvailable(clientProps)
     };
 };
