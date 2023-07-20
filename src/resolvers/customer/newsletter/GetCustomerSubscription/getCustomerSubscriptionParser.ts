@@ -1,6 +1,9 @@
-import { SetNewsletterSubscriptionMutation } from '@schema';
+import { GetCustomerSubscriptionQuery } from '@schema';
 
-export const getCustomerSubscriptionParser = (data: any): SetNewsletterSubscriptionMutation => {
-    // Your parser logic here
-    return data;
+export const getCustomerSubscriptionParser = (data: any): GetCustomerSubscriptionQuery => {
+    return {
+        customer: {
+            is_subscribed: data !== null? true : false
+        }
+    };
 };
