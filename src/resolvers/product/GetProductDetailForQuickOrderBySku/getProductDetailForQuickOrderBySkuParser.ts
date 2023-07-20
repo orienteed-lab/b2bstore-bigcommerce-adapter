@@ -5,7 +5,7 @@ export const getProductDetailForQuickOrderBySkuParser = (data: any): GetProductD
         products: {
             total_count: data.site.search.searchProducts.products.collectionInfo.totalItems,
             items: data.site.search.searchProducts.products.edges.map((item) => ({
-                orParentSku: "",
+                orParentSku: null,
                 id: item.node.entityId,
                 uid: item.node.id,
                 name: item.node.name,
