@@ -1,9 +1,13 @@
 import { gql } from '@apollo/client';
 
-export const GET_CUSTOMER_SUBSCRIPTION = gql`
-    # Your query here
+export const GET_CUSTOMER_INFO = gql`
+    query getCustomerInfo {
+        customer {
+            email
+        }
+    }
 `;
 
 export default {
-    setNewsletterSubscriptionMutation: GET_CUSTOMER_SUBSCRIPTION
+    getCustomerInfoQuery: GET_CUSTOMER_INFO
 };

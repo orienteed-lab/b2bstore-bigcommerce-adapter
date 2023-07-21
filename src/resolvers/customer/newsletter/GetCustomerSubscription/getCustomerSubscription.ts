@@ -1,43 +1,53 @@
 import { ClientProps } from 'src';
-import { GetCustomerSubscriptionQueryVariables } from '@schema';
 import { getCustomerSubscriptionParser } from './getCustomerSubscriptionParser';
 
+import DEFAULT_OPERATIONS from './getCustomerSubscription.gql';
 import { useEffect, useState } from 'react';
 
-const GetCustomerSubscription = (clientProps: ClientProps) => (resolverProps: GetCustomerSubscriptionQueryVariables) => {
-    const { restClient } = clientProps;
-    const { email } = resolverProps;
+interface GetCustomerSubscriptionInterface {
+    isSignedIn?: boolean;
+}
 
-    const [loading, setLoading] = useState(true);
-    const [data, setData] = useState<any>(null);
-    const [error, setError] = useState(null);
+const GetCustomerSubscription =
+    (clientProps: ClientProps) =>
+    (resolverProps: GetCustomerSubscriptionInterface = { isSignedIn: false }) => {
+        const { mergeOperations, useAwaitQuery, restClient } = clientProps;
+        const { isSignedIn } = resolverProps;
+        const [data, setData] = useState<any>(null);
+        const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true);
-            try {
-                const rawData = await restClient(`/api/v3/customers/subscribers/?email:in=${email}`, {
-                    method: 'GET',
-                    headers: {
-                        backendTechnology: 'bigcommerce'
+        const { getCustomerInfoQuery } = mergeOperations(DEFAULT_OPERATIONS);
+        const getCustomer = useAwaitQuery(getCustomerInfoQuery);
+
+        useEffect(() => {
+            const fetchData = async () => {
+                try {
+                    if (isSignedIn) {
+                        const { data } = await getCustomer({
+                            context: {
+                                headers: {
+                                    backendTechnology: ['bigcommerce']
+                                }
+                            }
+                        });
+
+                        const rawData = await restClient(`/api/v3/customers/subscribers/?email:in=${data.customer.email}`, {
+                            method: 'GET',
+                            headers: {
+                                backendTechnology: 'bigcommerce'
+                            }
+                        });
+
+                        setData(getCustomerSubscriptionParser(rawData));
                     }
-                });
+                } catch (err: any) {
+                    setError(err);
+                }
+            };
+            fetchData();
+        }, []);
 
-                setData(rawData);
-            } catch (err: any) {
-                setError(err);
-            }
-            setLoading(false);
-        };
-        fetchData();
-    }, []);
-
-    let parsedData = undefined;
-    if (data) {
-        parsedData = getCustomerSubscriptionParser(data);
-    }
-
-    return { data: parsedData, loading, error };
-};
+        return { data, error };
+    };
 
 export default GetCustomerSubscription;
