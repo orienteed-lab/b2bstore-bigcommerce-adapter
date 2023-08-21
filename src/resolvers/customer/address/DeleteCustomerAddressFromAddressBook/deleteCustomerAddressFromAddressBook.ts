@@ -1,11 +1,28 @@
 import { ClientProps } from 'src';
 import { DeleteCustomerAddressFromAddressBookMutationVariables } from '@schema';
+import { useState } from 'react';
 
 const DeleteCustomerAddressFromAddressBook =
     (clientProps: ClientProps) => (resolverProps: DeleteCustomerAddressFromAddressBookMutationVariables) => {
-        // Look docs for more info about how to fill this function
+        const { restClient } = clientProps;
+        const [loading, setLoading] = useState(false);
 
-        return { data: {}, loading: false, error: undefined };
+        const deleteCustomerAddress = async ({ variables }) => {
+            setLoading(true);
+            try {
+                await restClient(`/api/v3/customers/addresses?id:in=${variables.addressId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        backendTechnology: 'bigcommerce'
+                    }
+                });
+            } catch (err) {
+                console.log(err);
+            }
+            setLoading(false);
+        };
+
+        return { deleteCustomerAddress, loading };
     };
 
 export default DeleteCustomerAddressFromAddressBook;
