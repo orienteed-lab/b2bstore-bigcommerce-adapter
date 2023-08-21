@@ -3,7 +3,7 @@ import { IsEmailAvailableQuery } from '@schema';
 export const isEmailAvailableParser = (data: any): IsEmailAvailableQuery => {
     return {
         isEmailAvailable: {
-            is_email_available: data.length === 0 ? true : false
+            is_email_available: data.length === 0
         }
     };
 };
