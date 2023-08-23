@@ -1,7 +1,17 @@
 import { gql } from '@apollo/client';
 
 export const GET_IMAGE_BY_SKU = gql`
-    # Your query here
+query imageBySku($productSku: String) {
+    site {
+        product(sku: $productSku) {
+          id
+          sku
+          defaultImage {
+            urlOriginal
+          }
+        }
+      }
+  }
 `;
 
 export default {
