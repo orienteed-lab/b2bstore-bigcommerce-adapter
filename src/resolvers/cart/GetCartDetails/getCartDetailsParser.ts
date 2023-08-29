@@ -47,7 +47,7 @@ export const getCartDetailsParser = ({ data }: any): GetCartDetailsQuery => {
                           },
                           product: {
                               __typename: 'ConfigurableProduct',
-                              uid: item.id,
+                              uid: item.product_id,
                               name: item.name,
                               sku: item.sku,
                               url_key: item.url,
@@ -125,7 +125,7 @@ export const getCartDetailsParser = ({ data }: any): GetCartDetailsQuery => {
                           },
                           product: {
                               __typename: 'SimpleProduct',
-                              uid: item.id,
+                              uid: item.product_id,
                               name: item.name,
                               sku: item.sku,
                               url_key: item.url,
@@ -181,7 +181,7 @@ export const getCartDetailsParser = ({ data }: any): GetCartDetailsQuery => {
                           },
                           product: {
                               __typename: 'ConfigurableProduct',
-                              uid: item.id,
+                              uid: item.product_id,
                               name: item.name,
                               sku: item.sku,
                               url_key: item.url,
@@ -259,7 +259,7 @@ export const getCartDetailsParser = ({ data }: any): GetCartDetailsQuery => {
                           },
                           product: {
                               __typename: 'SimpleProduct',
-                              uid: item.id,
+                              uid: item.product_id,
                               name: item.name,
                               sku: item.sku,
                               url_key: item.url,
@@ -314,7 +314,7 @@ export const getCartDetailsParser = ({ data }: any): GetCartDetailsQuery => {
                     },
                     product: {
                         __typename: 'SimpleProduct',
-                        uid: item.id,
+                        uid: item.product_id,
                         name: item.name,
                         sku: item.sku,
                         url_key: '', // TODO_B2B: It doesn't have url
