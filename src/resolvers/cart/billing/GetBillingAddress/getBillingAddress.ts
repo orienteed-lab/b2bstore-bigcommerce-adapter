@@ -1,10 +1,43 @@
 import { ClientProps } from 'src';
 import { GetBillingAddressQueryVariables } from '@schema';
 
-const GetBillingAddress = (clientProps: ClientProps) => (resolverProps: GetBillingAddressQueryVariables) => {
-    // Look docs for more info about how to fill this function
+import { useState } from 'react';
+import { getBillingAddressParser } from './getBillingAddressParser';
 
-    return { data: {}, loading: false, error: undefined };
+interface GetBillingAddressProps extends GetBillingAddressQueryVariables {
+    type: 'request';
+}
+
+const GetBillingAddress = (clientProps: ClientProps) => (resolverProps: GetBillingAddressProps) => {
+    const { restClient } = clientProps;
+    const [data, setData] = useState<any>(null);
+    const {cartId, type }= resolverProps
+
+    const loadBillingAddressQuery = async () => {
+        console.log("CART ID: ", cartId)
+        
+        if(cartId){
+            const checkoutData = await restClient(
+                `/api/v3/checkouts/${cartId}`,
+                {
+                    method: 'GET',
+                    headers: {
+                        backendTechnology: 'bigcommerce'
+                    }
+                }
+            );
+            console.log("CHECKOUT DATA:", checkoutData.data)
+            setData(getBillingAddressParser(checkoutData.data))    
+        }
+    } 
+
+    if(type ==='request'){
+        return { data: data, loadBillingAddressQuery };
+    }else{
+        loadBillingAddressQuery();
+    }
+    
+    return { data: data, loadBillingAddressQuery };
 };
 
 export default GetBillingAddress;

@@ -27,9 +27,6 @@ const GetItemsInCart = (clientProps: ClientProps) => (resolverProps: GetItemsInC
                 }
             );
 
-            //console.log("RAW DATA:", rawData)
-            
-            // TODO_B2B: Check if this code is good
             const categoryData = await Promise.all(
                 [
                     ...rawData.data.line_items.physical_items,
@@ -42,9 +39,7 @@ const GetItemsInCart = (clientProps: ClientProps) => (resolverProps: GetItemsInC
                             backendTechnology: 'bigcommerce'
                         }
                     });
-                    console.log("RESPONSE CATEGORY: ", categoryResponse);
     
-                    // Obtener nombres de categorías a partir de las IDs de categoría
                     const categoryNames = await Promise.all(
                         categoryResponse.data.categories.map(async (categoryId) => {
                             const categoryInfo = await restClient(`/api/v3/catalog/categories/${categoryId}`, {
@@ -53,18 +48,17 @@ const GetItemsInCart = (clientProps: ClientProps) => (resolverProps: GetItemsInC
                                     backendTechnology: 'bigcommerce'
                                 }
                             });
-                            return categoryInfo.data.name; // Supongamos que el nombre de la categoría se encuentra en "name"
+                            return categoryInfo.data.name;
                         })
                     );
     
                     return {
                         ...item,
-                        categories: categoryNames, // Reemplazar las IDs de categoría con los nombres de categoría
+                        categories: categoryNames,
                     };
                 })
             );
     
-            //console.log(categoryData);
     
             const updatedPhysicalItems = rawData.data.line_items.physical_items.map((item) => ({
                 ...item,
@@ -79,7 +73,6 @@ const GetItemsInCart = (clientProps: ClientProps) => (resolverProps: GetItemsInC
                 },
             };
     
-            console.log("COMBINED DATA: ", combinedData);
             setData(combinedData);
 
         } catch (err: any) {
@@ -90,8 +83,6 @@ const GetItemsInCart = (clientProps: ClientProps) => (resolverProps: GetItemsInC
 
     }
     
-    
-
         let parsedData = undefined;
         if (data) {
             parsedData = getItemsInCartParser(data);
