@@ -2,7 +2,7 @@ import { GetRegionsQuery } from '@schema';
 
 export const getRegionsParser = ( data: any): GetRegionsQuery => {
 
-    return {
+    return data ? {
         country: {
             id: data[0].country_id,
             available_regions: data.map((reg: any) => ({
@@ -10,6 +10,10 @@ export const getRegionsParser = ( data: any): GetRegionsQuery => {
                 code: reg.state_abbreviation,
                 name: reg.state
             }))
+        }
+    } : {
+        country: {
+            available_regions: null
         }
     };
 };

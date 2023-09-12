@@ -1,61 +1,46 @@
 import { ClientProps } from 'src';
-import { GetCountriesQueryVariables, GetRegionsQueryVariables } from '@schema';
+import { GetRegionsQueryVariables } from '@schema';
 
 import { getRegionsParser } from './getRegionsParser';
 import { useEffect, useState } from 'react';
 
-interface GetRegionsProps {
-    variables: GetRegionsQueryVariables;
-}
+const GetRegions =
+    (clientProps: ClientProps) =>
+    (resolverProps: GetRegionsQueryVariables = { countryCode: null }) => {
+        const { restClient } = clientProps;
+        const { countryCode: country_iso2 } = resolverProps;
 
-const GetRegions = (clientProps: ClientProps) => (resolverProps: GetRegionsProps) => {
-    const { restClient, useQuery, mergeOperations } = clientProps;
-    const {
-        variables: { countryCode: country_iso2 }
-    } = resolverProps;
+        const [loading, setLoading] = useState(true);
+        const [data, setData] = useState(undefined);
 
-    const [loading, setLoading] = useState(true);
-    const [data, setData] = useState<any>(null);
-    const [error, setError] = useState(null);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            if (country_iso2) {
+        useEffect(() => {
+            const fetchData = async () => {
                 setLoading(true);
-                    restClient(`/api/v2/countries?country_iso2=${country_iso2}`, {
-                        method: 'GET',
-                        headers: {
-                            backendTechnology: 'bigcommerce'
-                        }
-                    }).then((country) => {
-                        restClient(`/api/v2/countries/${country[0].id}/states`, {
+                if (country_iso2) {
+                    try {
+                        const country = await restClient(`/api/v2/countries?country_iso2=${country_iso2}`, {
                             method: 'GET',
                             headers: {
                                 backendTechnology: 'bigcommerce'
                             }
-                        }).then((rawData) => {
-                            setData(rawData)
                         });
-                    }).catch((err) => {
-                        setError(err);
-                    }).finally(() => {
-                        setLoading(false);
-                    });
-            }
-        };
-        fetchData();
-    }, [country_iso2]);
+                        const rawData = await restClient(`/api/v2/countries/${country[0].id}/states`, { // Will return a warning message if there is no region data
+                            method: 'GET',
+                            headers: {
+                                backendTechnology: 'bigcommerce'
+                            }
+                        });
+                        setData(getRegionsParser(rawData));
+                    } catch (err) {
+                        setData(getRegionsParser(null)); // This means taht there is no region data for that country
+                    }
+                    setLoading(false);
+                }
+            };
+            fetchData();
+        }, [country_iso2]);
 
-    let parsedData = undefined;
-    if (data) {
-        // try {
-        parsedData = getRegionsParser(data);
-        // } catch (e) {
-        //     console.error(e);
-        // }
-    }
-
-    return { data: parsedData, loading, error };
-};
+        return { data, loading };
+    };
 
 export default GetRegions;
