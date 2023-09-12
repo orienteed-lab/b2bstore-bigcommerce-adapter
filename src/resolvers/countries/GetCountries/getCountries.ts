@@ -1,15 +1,14 @@
 import { ClientProps } from 'src';
-import { GetCountriesQueryVariables } from '@schema';
 
 import { getCountriesParser } from './getCountriesParser';
 import { useEffect, useState } from 'react';
 
-const GetCountries = (clientProps: ClientProps) => (resolverProps: GetCountriesQueryVariables) => {
-    const { restClient, useQuery, mergeOperations } = clientProps;
+const GetCountries = (clientProps: ClientProps) => () => {
+    const { restClient } = clientProps;
 
     const [loading, setLoading] = useState(true);
-    const [data, setData] = useState<any>(null);
-    const [error, setError] = useState(null);
+    const [data, setData] = useState<any>(undefined);
+    const [error, setError] = useState(undefined);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -21,7 +20,7 @@ const GetCountries = (clientProps: ClientProps) => (resolverProps: GetCountriesQ
                         backendTechnology: 'bigcommerce'
                     }
                 });
-                setData(rawData);
+                setData(getCountriesParser(rawData));
             } catch (err) {
                 setError(err);
             }
@@ -30,17 +29,7 @@ const GetCountries = (clientProps: ClientProps) => (resolverProps: GetCountriesQ
         fetchData();
     }, []);
 
-    let parsedData = undefined;
-    if (data) {
-        // try {
-        parsedData = getCountriesParser(data);
-        // } catch (e) {
-        //     console.error(e);
-        // }
-    }
-
-    return { data: parsedData, loading, error };
-    // return { data, loading, error};
+    return { data, loading, error };
 };
 
 export default GetCountries;
