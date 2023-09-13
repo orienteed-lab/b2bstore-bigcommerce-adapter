@@ -1,28 +1,36 @@
 import { ClientProps } from 'src';
 import { getMegaMenuParser } from './getMegaMenuParser';
 import DEFAULT_OPERATIONS from './getMegaMenu.gql';
+import { useEffect, useState } from 'react';
 
 const GetMegaMenu = (clientProps: ClientProps) => () => {
-    const { useQuery, mergeOperations } = clientProps;
+    const { useAwaitQuery, mergeOperations } = clientProps;
+    const [data, setData] = useState(undefined);
 
     const operations = mergeOperations(DEFAULT_OPERATIONS);
     const { getMegaMenuQuery } = operations;
 
-    const { data, refetch } = useQuery(getMegaMenuQuery, {
-        context: {
-            headers: {
-                backendTechnology: ['bigcommerce']
+    const getMegaMenu = useAwaitQuery(getMegaMenuQuery);
+
+    const refetch = async () => {
+        const { data: categoryData } = await getMegaMenu({
+            context: {
+                headers: {
+                    backendTechnology: ['bigcommerce']
+                }
             }
-        }
-    });
+        });
 
-    let parsedData = undefined;
+        setData(getMegaMenuParser(categoryData));
+        console.log(data);
+    };
 
-    if (data) {
-        parsedData = getMegaMenuParser(data);
-    }
+    useEffect(() => {
+        refetch();
+        console.log('HOLI');
+    }, []);
 
-    return { data: parsedData, refetch };
+    return { data, refetch };
 };
 
 export default GetMegaMenu;
