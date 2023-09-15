@@ -14,7 +14,6 @@ const GetBillingAddress = (clientProps: ClientProps) => (resolverProps: GetBilli
     const {cartId, type }= resolverProps
 
     const loadBillingAddressQuery = async () => {
-        console.log("CART ID: ", cartId)
         
         if(cartId){
             const checkoutData = await restClient(
@@ -26,7 +25,6 @@ const GetBillingAddress = (clientProps: ClientProps) => (resolverProps: GetBilli
                     }
                 }
             );
-            console.log("CHECKOUT DATA:", checkoutData.data)
             setData(getBillingAddressParser(checkoutData.data))    
         }
     } 
