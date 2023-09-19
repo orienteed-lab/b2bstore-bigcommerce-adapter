@@ -16,15 +16,62 @@ const GetCustomerInformation =
         const operations = mergeOperations(DEFAULT_OPERATIONS);
         const { getCustomerInformationQuery } = operations;
 
-        const [loading, setLoading] = useState(false);
+        const [loading, setLoading] = useState(!isAwait);
         const [data, setData] = useState(undefined);
         const [error, setError] = useState(undefined);
         const performQuery = useAwaitQuery(getCustomerInformationQuery);
 
-        const getCustomerInformation = useCallback(async () => {
-            setLoading(true);
-            try {
-                if (isSignedIn) {
+        useEffect(() => {
+            if (!isAwait) {
+                const getInformation = async () => {
+                    setLoading(true);
+                    try {
+                        if (isSignedIn || isSignedIn === null) {
+                            const { data: dataCustomer } = await performQuery({
+                                context: {
+                                    headers: {
+                                        backendTechnology: ['bigcommerce']
+                                    }
+                                }
+                            });
+
+                            const { data: shippingData } = await restClient(
+                                `/api/v3/customers?include=addresses&email:in=${dataCustomer.customer.email}`,
+                                {
+                                    method: 'GET',
+                                    headers: {
+                                        backendTechnology: 'bigcommerce'
+                                    }
+                                }
+                            );
+
+                            const { data: rawData } = await restClient(
+                                `/api/v3/customers/subscribers/?email:in=${dataCustomer.customer.email}`,
+                                {
+                                    method: 'GET',
+                                    headers: {
+                                        backendTechnology: 'bigcommerce'
+                                    }
+                                }
+                            );
+
+                            setData(getCustomerInformationParser(dataCustomer, rawData, shippingData));
+                        }
+                    } catch (err) {
+                        setError(err);
+                    }
+                    setLoading(false);
+                };
+                getInformation();
+            }
+        }, []);
+
+        if (isAwait) {
+
+            const fetchUserDetails = useCallback(async () => {
+                setLoading(true);
+                let dataFetch = undefined;
+                try {
                     const { data: dataCustomer } = await performQuery({
                         context: {
                             headers: {
@@ -33,6 +80,16 @@ const GetCustomerInformation =
                         }
                     });
 
+                    const { data: shippingData } = await restClient(
+                        `/api/v3/customers?include=addresses&email:in=${dataCustomer.customer.email}`,
+                        {
+                            method: 'GET',
+                            headers: {
+                                backendTechnology: 'bigcommerce'
+                            }
+                        }
+                    );
+
                     const { data: rawData } = await restClient(`/api/v3/customers/subscribers/?email:in=${dataCustomer.customer.email}`, {
                         method: 'GET',
                         headers: {
@@ -40,22 +97,19 @@ const GetCustomerInformation =
                         }
                     });
 
-                    setData(getCustomerInformationParser(dataCustomer, rawData));
+                    dataFetch = getCustomerInformationParser(dataCustomer, rawData, shippingData);
+                    setData(dataFetch);
+                } catch (err) {
+                    setError(err);
                 }
-            } catch (err) {
-                setError(err);
-            }
-            setLoading(false);
-            return { data };
-        }, []);
+                setLoading(false);
+                return { data: dataFetch };
+            }, []);
 
-        useEffect(() => {
-            if (!isAwait) {
-                getCustomerInformation();
-            }
-        }, []);
-
-        return { loading, error, data, getCustomerInformation };
+            return fetchUserDetails;
+        } else {
+            return { loading, error, data };
+        }
     };
 
 export default GetCustomerInformation;
