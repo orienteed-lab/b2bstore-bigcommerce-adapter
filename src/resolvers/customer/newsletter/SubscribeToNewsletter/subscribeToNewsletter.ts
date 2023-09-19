@@ -1,13 +1,16 @@
 import { ClientProps } from 'src';
-import { SubscribeToNewsletterMutationVariables } from '@schema';
 import { subscribeToNewsletterParser } from './subscribeToNewsletterParser';
 import { useState } from 'react';
 
-const SubscribeToNewsletter = (clientProps: ClientProps) => (resolverProps: SubscribeToNewsletterMutationVariables ) => {
+interface SubscribeToNewsletterProps {
+    setNewsLetterError?: any
+}
+
+const SubscribeToNewsletter = (clientProps: ClientProps) => (resolverProps: SubscribeToNewsletterProps ) => {
 
     const { restClient } = clientProps;
+    const { setNewsLetterError } = resolverProps;
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
     const [data, setData] = useState(undefined);
 
     const subscribeNewsLetter = async ({ variables }) => {
@@ -23,7 +26,7 @@ const SubscribeToNewsletter = (clientProps: ClientProps) => (resolverProps: Subs
 
             setData(subscribeToNewsletterParser(data));
         } catch (err) {
-            setError(err);
+            setNewsLetterError(err);
         }
         setLoading(false);
     };
