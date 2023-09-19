@@ -3,9 +3,15 @@ import { UpdateCustomerAddressInAddressBookMutationVariables } from '@schema';
 
 import { useState } from 'react';
 
+interface UpdateCustomerAddressInAddressBookProps extends UpdateCustomerAddressInAddressBookMutationVariables {
+    onSuccess?: any;
+    hasOnSuccess: boolean;
+}
+
 const UpdateCustomerAddressInAddressBook =
-    (clientProps: ClientProps) => (resolverProps: UpdateCustomerAddressInAddressBookMutationVariables) => {
+    (clientProps: ClientProps) => (resolverProps: UpdateCustomerAddressInAddressBookProps = { hasOnSuccess: false, addressId: 0, updated_address: {} }) => {
         const { restClient } = clientProps;
+        const { hasOnSuccess } = resolverProps;
         const [error, setError] = useState(undefined);
         const [loading, setLoading] = useState(false);
 
@@ -60,6 +66,12 @@ const UpdateCustomerAddressInAddressBook =
                         },
                         body: JSON.stringify(rawData)
                     });
+
+                    if (hasOnSuccess) {
+                        const { onSuccess } = resolverProps;
+                        onSuccess();
+                    }
+
                 } else {
                     if (variables.address.region.region_id) {
                         const countryData = await restClient(`/api/v2/countries?country_iso2=${variables.address.country_code}`, {
@@ -106,6 +118,12 @@ const UpdateCustomerAddressInAddressBook =
                         },
                         body: JSON.stringify(rawData)
                     });
+
+                    if (hasOnSuccess) {
+                        const { onSuccess } = resolverProps;
+                        onSuccess();
+                    }
+
                 }
             } catch (err) {
                 console.log(err);
