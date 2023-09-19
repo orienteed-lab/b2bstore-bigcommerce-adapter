@@ -17,8 +17,8 @@ const CreateAccount = (clientProps: ClientProps) => (resolverProps: CreateAccoun
                     new_password: variables.password
                 },
                 accepts_product_review_abandoned_cart_emails: variables.is_subscribed,
-                origin_channel_id: 1,
-                channel_ids: [1]
+                origin_channel_id: variables.channel_id,
+                channel_ids: [variables.channel_id]
             }
         ];
         try {
