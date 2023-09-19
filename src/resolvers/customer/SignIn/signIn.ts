@@ -10,26 +10,26 @@ const SignIn = (clientProps: ClientProps) => (resolverProps: SignInMutationVaria
 
     const [performMutation, { error }] = useMutation(signInMutation);
 
-    const signIn = async (email, password, auth) => {
+    const signIn = async ({variables}) => {
         let token = '';
-        console.log(auth);
-        console.log(email);
-        console.log(password);
+        console.log(variables.auth);
+        console.log(variables.email);
+        console.log(variables.password);
         const data = await performMutation({
             variables: {
-                email,
-                password
+                email: variables.email,
+                password: variables.password
             },
             context: {
                 headers: {
                     backendTechnology: ['bigcommerce'],
-                    authorization: `Bearer ${auth}`
+                    authorization: `Bearer ${variables.auth}`
                 }
             }
         });
 
         if (data) {
-            token = auth;
+            token = variables.auth;
         }
         return { data: { generateCustomerToken: { token: token } } };
     };
