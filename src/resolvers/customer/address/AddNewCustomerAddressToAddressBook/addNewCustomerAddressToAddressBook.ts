@@ -4,9 +4,15 @@ import { AddNewCustomerAddressToAddressBookMutationVariables } from '@schema';
 import DEFAULT_OPERATIONS from './addNewCustomerAddressToAddressBook.gql';
 import { useState } from 'react';
 
+interface AddNewCustomerAddressToAddressBookProps extends AddNewCustomerAddressToAddressBookMutationVariables {
+    onSuccess?: any;
+    hasOnSuccess?: boolean;
+}
+
 const AddNewCustomerAddressToAddressBook =
-    (clientProps: ClientProps) => (resolverProps: AddNewCustomerAddressToAddressBookMutationVariables) => {
+    (clientProps: ClientProps) => (resolverProps: AddNewCustomerAddressToAddressBookProps = { address: {}, hasOnSuccess: false }) => {
         const { mergeOperations, useAwaitQuery, restClient } = clientProps;
+        const { hasOnSuccess } = resolverProps;
         const [error, setError] = useState(undefined);
         const [loading, setLoading] = useState(false);
 
@@ -66,6 +72,12 @@ const AddNewCustomerAddressToAddressBook =
                     },
                     body: JSON.stringify(rawData)
                 });
+
+                if (hasOnSuccess) {
+                    const { onSuccess } = resolverProps;
+                    onSuccess();
+                }
+
             } catch (err) {
                 console.log(err);
                 setError(err);
