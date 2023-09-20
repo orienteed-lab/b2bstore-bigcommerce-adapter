@@ -4,84 +4,73 @@ import { useEffect, useState } from 'react';
 import { getCustomerAddressesForAddressBookParser } from './getCustomerAddressesForAddressBookParser';
 import DEFAULT_OPERATIONS from './getCustomerAddressesForAddressBook.gql';
 
-const GetCustomerAddressesForAddressBook = (clientProps: ClientProps) => () => {
-    const { restClient, useQuery, mergeOperations } = clientProps;
+interface GetCustomerAddressesForAddressBook {
+    isSignedIn: boolean;
+}
 
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [parsedData, setParsedData] = useState<any>(undefined);
-    let regionsData = [];
+const GetCustomerAddressesForAddressBook =
+    (clientProps: ClientProps) =>
+    (resolverProps: GetCustomerAddressesForAddressBook = { isSignedIn: true }) => {
+        const { restClient, useAwaitQuery, mergeOperations } = clientProps;
+        const { isSignedIn } = resolverProps;
 
-    const operations = mergeOperations(DEFAULT_OPERATIONS);
-    const { getCustomerAddressesForAddressBookQuery } = operations;
+        const [loading, setLoading] = useState(true);
+        const [error, setError] = useState(null);
+        const [parsedData, setParsedData] = useState<any>(undefined);
+        const regionsData = [];
 
-    const {
-        data,
-        loading: customerLoading,
-        error: customerError
-    } = useQuery(getCustomerAddressesForAddressBookQuery, {
-        context: {
-            headers: {
-                backendTechnology: ['bigcommerce']
-            }
-        }
-    });
+        const operations = mergeOperations(DEFAULT_OPERATIONS);
+        const { getCustomerAddressesForAddressBookQuery } = operations;
 
-    useEffect(() => {
-        if (!customerLoading && !customerError && data) {
-            const customer = data.customer.entityId;
+        const getCustomerAddresses = useAwaitQuery(getCustomerAddressesForAddressBookQuery);
+
+        useEffect(() => {
             const fetchData = async () => {
                 setLoading(true);
-                restClient(`/api/v2/countries?limit=250`, {
-                    method: 'GET',
-                    headers: {
-                        backendTechnology: 'bigcommerce'
-                    }
-                })
-                    .then((countriesData) => {
-                        restClient(`/api/v3/customers/addresses?customer_id:in=${customer}`, {
+                if (isSignedIn) {
+                    try {
+                        const { data } = await getCustomerAddresses({
+                            context: {
+                                headers: {
+                                    backendTechnology: ['bigcommerce']
+                                }
+                            }
+                        });
+                        const customer = data.customer.entityId;
+                        const countriesData = await restClient(`/api/v2/countries?limit=250`, {
                             method: 'GET',
                             headers: {
                                 backendTechnology: 'bigcommerce'
                             }
-                        }).then((rawData) => {
-                            rawData.data.map((address) => {
-                                const country = countriesData.filter((country) => country.country_iso2 === address.country_code);
-                                restClient(`/api/v2/countries/${country[0].id}/states`, {
-                                    method: 'GET',
-                                    headers: {
-                                        backendTechnology: 'bigcommerce'
-                                    }
-                                })
-                                    .then((states) => {
-                                        const state = states.filter((region) => region.state === address.state_or_province);
-                                        regionsData.push(state[0]);
-
-                                        if (rawData && regionsData.length != 0) {
-                                            // try {
-                                            setParsedData(
-                                                getCustomerAddressesForAddressBookParser(rawData.data, countriesData, regionsData)
-                                            );
-                                            // } catch (e) {
-                                            //     console.error(e);
-                                            // }
-                                        }
-                                    })
-                                    .finally(() => {
-                                        setLoading(false);
-                                    });
-                            });
                         });
-                    })
-                    .catch((err) => {
+                        const rawData = await restClient(`/api/v3/customers/addresses?customer_id:in=${customer}`, {
+                            method: 'GET',
+                            headers: {
+                                backendTechnology: 'bigcommerce'
+                            }
+                        });
+                        // rawData.data.map(async (address) => {
+                        //     const country = countriesData.filter((country) => country.country_iso2 === address.country_code);
+                        //     const states = await restClient(`/api/v2/countries/${country[0].id}/states`, {
+                        //         method: 'GET',
+                        //         headers: {
+                        //             backendTechnology: 'bigcommerce'
+                        //         }
+                        //     });
+                        //     const state = states.filter((region) => region.state === address.state_or_province);
+                        //     regionsData.push(state[0]);
+                        // });
+                        setParsedData(getCustomerAddressesForAddressBookParser(rawData.data, countriesData, regionsData));
+                    } catch (err) {
                         setError(err);
-                    });
+                    }
+                }
+                setLoading(false);
             };
             fetchData();
-        }
-    }, []);
+        }, []);
 
-    return { data: parsedData, loading, error };
-};
+        return { data: parsedData, loading, error };
+    };
 
 export default GetCustomerAddressesForAddressBook;
