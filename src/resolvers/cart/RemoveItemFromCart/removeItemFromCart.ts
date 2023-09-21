@@ -9,24 +9,23 @@ const RemoveItemFromCart = (clientProps: ClientProps) => (resolverProps: RemoveI
     const [error, setError] = useState(null);
     const [called, setCalled] = useState(false);
 
-    const removeItemFromCart = ({ variables }) => {
+    const removeItem = async ({ variables }) => {
         setLoading(true);
         setCalled(true);
-        restClient(`/api/v3/carts/${variables.cartId}/items/${variables.itemId}`, {
-            method: 'DELETE',
-            headers: {
-                backendTechnology: 'bigcommerce'
-            }
-        })
-            .catch((err) => {
-                setError(err);
-            })
-            .finally(() => {
-                setLoading(false);
+        try {
+            await restClient(`/api/v3/carts/${variables.cartId}/items/${variables.itemId}`, {
+                method: 'DELETE',
+                headers: {
+                    backendTechnology: 'bigcommerce'
+                }
             });
+        } catch (err) {
+            setError(err);
+        }
+        setLoading(false);
     };
 
-    return { removeItemFromCart, loading, error, called };
+    return { removeItem, loading, error, called };
 };
 
 export default RemoveItemFromCart;
