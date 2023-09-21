@@ -2,7 +2,7 @@ import { ClientProps } from 'src';
 import { GetProductListingQueryVariables } from '@schema';
 
 import { getProductListingParser } from './getProductListingParser';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 interface GetCartDetailsProps {
     variables: GetProductListingQueryVariables;
@@ -12,11 +12,11 @@ const GetProductListing = (clientProps: ClientProps) => (resolverProps: GetCartD
     const { restClient } = clientProps;
 
     const [loading, setLoading] = useState(true);
-    const [data, setData] = useState<any>(null);
-    const [error, setError] = useState(null);
+    const [data, setData] = useState<any>(undefined);
+    const [error, setError] = useState(undefined);
     const [called, setCalled] = useState(false);
 
-    const fetchProductListing = async ({variables}) => {
+    const fetchProductListing = useCallback(async ({variables}) => {
         setLoading(true);
         setCalled(true);
         try {
@@ -35,7 +35,7 @@ const GetProductListing = (clientProps: ClientProps) => (resolverProps: GetCartD
             setError(err);
         }
         setLoading(false);
-    };
+    }, []);
 
     return { fetchProductListing, data, loading, error, called };
 };
