@@ -1,18 +1,17 @@
 import { ClientProps } from 'src';
-import { CreateCartMutationVariables } from '@schema';
 
 import DEFAULT_OPERATIONS from './createCart.gql';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 const CreateCart = (clientProps: ClientProps) => () => {
     const { mergeOperations, useAwaitQuery, restClient } = clientProps;
-    const [error, setError] = useState(undefined);
-    const [data, setData] = useState(undefined);
 
     const { getCustomerIdQuery } = mergeOperations(DEFAULT_OPERATIONS);
     const getCustomer = useAwaitQuery(getCustomerIdQuery);
 
-    const fetchCartId = async () => {
+    const fetchCartId = useCallback(async () => {
+        let data = undefined;
+        let errors = undefined;
         try {
             const { data: customerData } = await getCustomer({
                 context: {
@@ -41,13 +40,13 @@ const CreateCart = (clientProps: ClientProps) => () => {
                 body: JSON.stringify(body)
             });
 
-            setData({ cartId: rawData.data.id });
+            data = { cartId: rawData.data.id };
         } catch (err) {
-            setError(err);
+            errors = err;
         }
 
-        return { data, error };
-    };
+        return { data, errors };
+    }, []);
 
     return { fetchCartId };
 };
