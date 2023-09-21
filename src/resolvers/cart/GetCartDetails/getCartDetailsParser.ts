@@ -47,7 +47,7 @@ export const getCartDetailsParser = ({ data }: any): GetCartDetailsQuery => {
                           },
                           product: {
                               __typename: 'ConfigurableProduct',
-                              uid: item.product_id,
+                              uid: item.product_id.toString(),
                               name: item.name,
                               sku: item.sku,
                               url_key: item.url,
@@ -78,7 +78,7 @@ export const getCartDetailsParser = ({ data }: any): GetCartDetailsQuery => {
                                           value_index: variant.valueId
                                       })),
                                       product: {
-                                          uid: item.variant_id,
+                                          uid: item.variant_id.toString(),
                                           name: `${item.name}${item.sku}`,
                                           sku: item.sku, // El sku por defecto es el de la variante
                                           stock_status: 'IN_STOCK', // You can´t add a product to cart if it doesn't have stock
@@ -125,7 +125,7 @@ export const getCartDetailsParser = ({ data }: any): GetCartDetailsQuery => {
                           },
                           product: {
                               __typename: 'SimpleProduct',
-                              uid: item.product_id,
+                              uid: item.product_id.toString(),
                               name: item.name,
                               sku: item.sku,
                               url_key: item.url,
@@ -181,7 +181,7 @@ export const getCartDetailsParser = ({ data }: any): GetCartDetailsQuery => {
                           },
                           product: {
                               __typename: 'ConfigurableProduct',
-                              uid: item.product_id,
+                              uid: item.product_id.toString(),
                               name: item.name,
                               sku: item.sku,
                               url_key: item.url,
@@ -213,7 +213,7 @@ export const getCartDetailsParser = ({ data }: any): GetCartDetailsQuery => {
                                       }
                                   ],
                                   product: {
-                                      uid: item.variant_id,
+                                      uid: item.variant_id.toString(),
                                       name: `${item.name}${item.sku}`,
                                       sku: item.sku, // El sku por defecto es el de la variante
                                       stock_status: 'IN_STOCK', // You can´t add a product to cart if it doesn't have stock
@@ -259,7 +259,7 @@ export const getCartDetailsParser = ({ data }: any): GetCartDetailsQuery => {
                           },
                           product: {
                               __typename: 'SimpleProduct',
-                              uid: item.product_id,
+                              uid: item.product_id.toString(),
                               name: item.name,
                               sku: item.sku,
                               url_key: item.url,
@@ -314,7 +314,7 @@ export const getCartDetailsParser = ({ data }: any): GetCartDetailsQuery => {
                     },
                     product: {
                         __typename: 'SimpleProduct',
-                        uid: item.product_id,
+                        uid: item.product_id.toString(),
                         name: item.name,
                         sku: item.sku,
                         url_key: '', // TODO_B2B: It doesn't have url

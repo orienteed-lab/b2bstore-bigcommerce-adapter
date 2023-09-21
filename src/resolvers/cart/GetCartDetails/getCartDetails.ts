@@ -6,11 +6,12 @@ import { useState } from 'react';
 const GetCartDetails = (clientProps: ClientProps) => () => {
     const { restClient } = clientProps;
     const [loading, setLoading] = useState(true);
-    const [data, setData] = useState<any>(null);
-    const [error, setError] = useState(null);
+    const [data, setData] = useState<any>(undefined);
+    const [error, setError] = useState(undefined);
     const [called, setCalled] = useState(false);
 
     const fetchCartDetails = async ({ variables }) => {
+        let parsedData = undefined;
         setLoading(true);
         setCalled(true);
         try {
@@ -25,12 +26,14 @@ const GetCartDetails = (clientProps: ClientProps) => () => {
             );
 
             if (rawData) {
-                setData(getCartDetailsParser(rawData));
+                parsedData = getCartDetailsParser(rawData);
+                setData(parsedData);
             }
         } catch (err: any) {
             setError(err);
         }
         setLoading(false);
+        return { data: parsedData };
     };
 
     return { fetchCartDetails, data, loading, error, called };
