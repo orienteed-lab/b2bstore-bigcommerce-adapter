@@ -32,7 +32,7 @@ const GetItemCount = (clientProps: ClientProps) => (resolverProps: GetItemCountQ
             setLoading(false);
         };
         fetchData();
-    }, []);
+    }, [cartId]);
 
 
     let parsedData = undefined;
