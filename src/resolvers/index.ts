@@ -132,6 +132,7 @@ export { default as updateCustomerAddressInAddressBook } from './customer/addres
 export { default as updateQuote } from './requestQuote/UpdateQuote/updateQuote';
 export { default as updateWishlist } from './customer/wishlist/UpdateWishlist/updateWishlist';
 export { default as isEmailAvailable } from './customer/IsEmailAvailable/isEmailAvailable';
+export { default as getPriceSummary } from './cart/GetPriceSummary/getPriceSummary';
 
 // Custom resolvers
 export { default as generateToken } from './custom/GenerateToken/generateToken';

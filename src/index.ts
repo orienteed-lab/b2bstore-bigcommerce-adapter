@@ -133,7 +133,8 @@ import {
     getStoreConfig,
     getWebkulPaymentCreditSystemConfig,
     generateToken,
-    isEmailAvailable
+    isEmailAvailable,
+    getPriceSummary
 } from './resolvers';
 
 export interface ClientProps {
@@ -282,6 +283,7 @@ export const getResolvers = (clientProps: ClientProps) => {
         getStoreConfig: getStoreConfig(clientProps),
         getWebkulPaymentCreditSystemConfig: getWebkulPaymentCreditSystemConfig(clientProps),
         generateToken: generateToken(clientProps),
-        isEmailAvailable: isEmailAvailable(clientProps)
+        isEmailAvailable: isEmailAvailable(clientProps),
+        getPriceSummary: getPriceSummary(clientProps)
     };
 };
