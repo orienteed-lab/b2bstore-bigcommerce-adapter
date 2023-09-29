@@ -18,7 +18,7 @@ const GetBreadcrumbs = (clientProps: ClientProps) => (resolverProps: GetBreadcru
             }
         },
         variables: {
-            id: category_id
+            id: parseInt(category_id)
         }
     });
 

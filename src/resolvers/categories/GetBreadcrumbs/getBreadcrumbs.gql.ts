@@ -13,7 +13,7 @@ export const GET_BREADCRUMBS = gql`
                     node {
                         category_uid: entityId
                         name
-                        
+                        path
                     }
                 }
             }
