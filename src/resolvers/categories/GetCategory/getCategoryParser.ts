@@ -26,22 +26,22 @@ export const getCategoryParser = (data: any, currentPage, pageSize): GetCategory
         },
         products: {
             items: products().map((item: any) =>
-                item.node.productOptions.edges.length != 0
+                item.node.variants.edges.length != 0 && item.node.variants.edges[0].node.productOptions.edges.length != 0
                     ? {
                           __typename: 'ConfigurableProduct',
                           id: item.node.id,
-                          uid: item.node.entityId,
+                          uid: item.node.entityId.toString(),
                           name: item.node.name,
                           sku: item.node.sku,
                           stock_status: item.node.inventory.isInStock ? 'IN_STOCK' : 'OUT_OF_STOCK',
                           rating_summary: item.node.reviewSummary.summationOfRatings,
                           type_id: item.node.type,
-                          url_key: item.node.path,
-                          url_suffix: item.node.path,
+                          url_key: item.node.path.slice(1, -1),
+                          url_suffix: '.html',
                           configurable_options: item.node.productOptions.edges.map((option: any) => ({
                               attribute_code: option.node.displayName, //TODO_B2B: is the displayName the attribute_code?
                               attribute_id: option.node.entityId,
-                              uid: option.node.entityId,
+                              uid: option.node.entityId.toString(),
                               label: option.node.displayName,
                               values: option.node.values
                                   ? option.node.values.edges.map((value: any) => ({
@@ -50,7 +50,7 @@ export const getCategoryParser = (data: any, currentPage, pageSize): GetCategory
                                         store_label: value.node.label,
                                         use_default_value: value.node.isDefault, //TODO_B2B: Check if it's the right default
                                         value_index: value.node.entityId,
-                                        uid: value.node.entityId,
+                                        uid: value.node.entityId.toString(),
                                         swatch_data: null
                                     }))
                                   : [
@@ -60,7 +60,7 @@ export const getCategoryParser = (data: any, currentPage, pageSize): GetCategory
                                             store_label: option.node.label ? option.node.label : option.node.displayName,
                                             // use_default_value: ,
                                             value_index: option.node.entityId,
-                                            uid: option.node.entityId,
+                                            uid: option.node.entityId.toString(),
                                             swatch_data: null
                                         }
                                     ],
@@ -128,20 +128,20 @@ export const getCategoryParser = (data: any, currentPage, pageSize): GetCategory
                               }
                           },
                           small_image: {
-                              url: item.node.images.edges[0].node.url
+                              url: item.node.images.edges.length !== 0 ? item.node.images.edges[0].node.url : ''
                           }
                       }
                     : {
                           __typename: 'SimpleProduct',
                           id: item.node.id,
-                          uid: item.node.entityId,
+                          uid: item.node.entityId.toString(),
                           name: item.node.name,
                           sku: item.node.sku,
                           stock_status: item.node.inventory.isInStock ? 'IN_STOCK' : 'OUT_OF_STOCK',
                           rating_summary: item.node.reviewSummary.summationOfRatings,
                           type_id: item.node.type,
-                          url_key: item.node.path,
-                          url_suffix: item.node.path,
+                          url_key: item.node.path.slice(1, -1),
+                          url_suffix: '.html',
                           price_range: {
                               maximum_price: {
                                   regular_price: {
@@ -165,7 +165,7 @@ export const getCategoryParser = (data: any, currentPage, pageSize): GetCategory
                               }
                           },
                           small_image: {
-                              url: item.node.images.edges[0].node.url
+                              url: item.node.images.edges.length !== 0 ? item.node.images.edges[0].node.url : ''
                           }
                       }
             ),
