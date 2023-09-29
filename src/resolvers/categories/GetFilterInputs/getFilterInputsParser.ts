@@ -9,7 +9,7 @@ export const getFilterInputsParser = (data: any): GetFilterInputsQuery => {
                 name: input.node.name,
                 type: {
                     __typename: '__Type',
-                    name: '' //TODO_B2B: It doesn't exist in BigCommerce
+                    name: 'FilterEqualTypeInput' //TODO_B2B: It doesn't exist in BigCommerce
                 }
             }))
         }
