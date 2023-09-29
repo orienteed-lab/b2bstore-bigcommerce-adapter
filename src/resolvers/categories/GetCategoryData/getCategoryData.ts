@@ -3,56 +3,73 @@ import { GetCategoryDataQueryVariables } from '@schema';
 import { getCategoryDataParser } from './getCategoryDataParser';
 import DEFAULT_OPERATIONS from './getCategoryData.gql';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-interface CategoryLazy extends GetCategoryDataQueryVariables {
-    lazy: boolean;
+interface GetCategoryDataProps extends GetCategoryDataQueryVariables {
+    type: 'request';
 }
 
-const GetCategoryData = (clientProps: ClientProps) => (resolverProps: CategoryLazy) => {
-    const { useQuery, mergeOperations, useLazyQuery, restClient } = clientProps;
-    const { lazy, id } = resolverProps;
+const GetCategoryData = (clientProps: ClientProps) => (resolverProps: GetCategoryDataProps) => {
+    const { mergeOperations, useAwaitQuery } = clientProps;
+    const { type, id } = resolverProps;
+    const [data, setData] = useState(undefined);
+    const [loading, setLoading] = useState(type !== 'request');
+    const [error, setError] = useState(undefined);
 
     const operations = mergeOperations(DEFAULT_OPERATIONS);
     const { getCategoryDataQuery } = operations;
 
-    let parsedData = undefined;
+    const getData = useAwaitQuery(getCategoryDataQuery);
 
-    if (lazy) {
-        const [runQuery, queryResult] = useLazyQuery(getCategoryDataQuery, {
-            fetchPolicy: 'cache-and-network',
-            nextFetchPolicy: 'cache-first',
-            context: {
-                headers: {
-                    backendTechnology: ['bigcommerce']
+    const runQuery = useCallback(async ({ variables }) => {
+        setLoading(true);
+        try {
+            const { data: categoryData } = await getData({
+                context: {
+                    headers: {
+                        backendTechnology: ['bigcommerce']
+                    }
+                },
+                variables: {
+                    id: parseInt(variables.id)
                 }
-            }
-        });
-        const { data } = queryResult;
+            });
 
-        if (data) {
-            parsedData = getCategoryDataParser(data);
+            setData(getCategoryDataParser(categoryData));
+        } catch (err) {
+            setError(err);
         }
+        setLoading(false);
+    }, []);
 
-        return { queryResult: { data: parsedData }, runQuery };
-    } else {
-        const { loading, error, data } = useQuery(getCategoryDataQuery, {
-            context: {
-                headers: {
-                    backendTechnology: ['bigcommerce']
-                }
-            },
-            variables: {
-                id: 21
-            }
-        });
+    // const runQuery = async ({ variables }) => {
+    //     setLoading(true);
+    //     try {
+    //         const { data: categoryData } = await getData({
+    //             context: {
+    //                 headers: {
+    //                     backendTechnology: ['bigcommerce']
+    //                 }
+    //             },
+    //             variables: {
+    //                 id: 23
+    //             }
+    //         });
 
-        if (data) {
-            parsedData = getCategoryDataParser(data);
+    //         setData(getCategoryDataParser(categoryData));
+    //     } catch (err) {
+    //         setError(err);
+    //     }
+    //     setLoading(false);
+    // };
+
+    useEffect(() => {
+        if (type !== 'request' && id) {
+            runQuery({ variables: { id } });
         }
+    }, []);
 
-        return { data: parsedData, loading, error };
-    }
+    return { runQuery, data, error, loading };
 };
 
 export default GetCategoryData;

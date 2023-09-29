@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const GET_CATEGORY_DATA = gql`
-    query getCategory($id: Int!) {
+    query getCategoryData($id: Int!) {
         site {
             categoryTree(rootEntityId: $id) {
                 entityId
@@ -16,6 +16,9 @@ export const GET_CATEGORY_DATA = gql`
                     path
                     image {
                         urlOriginal
+                    }
+                    children {
+                        entityId
                     }
                 }
             }
