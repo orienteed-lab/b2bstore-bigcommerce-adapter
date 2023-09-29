@@ -3,34 +3,33 @@ import { GetProductAggregationsFilteredByCategoryQueryVariables } from '@schema'
 
 import { getProductAggregationsFilteredByCategoryParser } from './getProductAggregationsFilteredByCategoryParser';
 import DEFAULT_OPERATIONS from './getProductAggregationsFilteredByCategory.gql';
+import { useState } from 'react';
 
 const GetProductAggregationsFilteredByCategory =
     (clientProps: ClientProps) => (resolverProps: GetProductAggregationsFilteredByCategoryQueryVariables) => {
-        const { useLazyQuery, mergeOperations } = clientProps;
+        const { useAwaitQuery, mergeOperations } = clientProps;
+        const [data, setData] = useState(null);
 
         const operations = mergeOperations(DEFAULT_OPERATIONS);
         const { getProductAggregationsFilteredByCategoryQuery } = operations;
+        const getAggregations = useAwaitQuery(getProductAggregationsFilteredByCategoryQuery);
 
-        const [getFilters, { data }] = useLazyQuery(getProductAggregationsFilteredByCategoryQuery, {
-            fetchPolicy: 'cache-and-network',
-            nextFetchPolicy: 'cache-first',
-            context: {
-                headers: {
-                    backendTechnology: ['bigcommerce']
+        const getFilters = async ({variables}) => {
+            const { data: filterData } = await getAggregations({
+                context: {
+                    headers: {
+                        backendTechnology: ['bigcommerce']
+                    }
+                },
+                variables: {
+                    category: {categoryEntityId: parseInt(variables.categoryIdFilter.eq)}
                 }
-            }
-        });
-        let parsedData = undefined;
+            });
 
-        if (data) {
-            try {
-            parsedData = getProductAggregationsFilteredByCategoryParser(data);
-            } catch (e) {
-                console.error(e);
-            }
-        }
+            setData(getProductAggregationsFilteredByCategoryParser(filterData));
+        };
 
-        return { getFilters, data: parsedData };
+        return { getFilters, data};
     };
 
 export default GetProductAggregationsFilteredByCategory;
