@@ -41,6 +41,7 @@ export const GET_SIMPLE_PRODUCT = gql`
                     edges {
                         node {
                             id
+                            entityId
                             path
                         }
                     }

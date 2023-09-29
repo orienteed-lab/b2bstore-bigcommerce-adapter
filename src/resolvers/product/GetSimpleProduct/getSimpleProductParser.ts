@@ -13,21 +13,21 @@ export function getSimpleProductParser(data: any): GetSimpleProductQuery {
                     id: data.site.product.id,
                     // @ts-ignore // Ignore stock_status type error because we cannot import ProductStockStatus enum from the schema
                     stock_status: data.site.product.inventory.isInStock ? 'IN_STOCK' : 'OUT_OF_STOCK',
-                    media_gallery_entries: data.site.product.images.edges.map((image: any) => ({
+                    media_gallery_entries: data.site.product.images.edges.length !== 0 ? data.site.product.images.edges.map((image: any) => ({
                         file: image.node.urlOriginal
-                    })),
+                    })): [{file: ''}],
                     categories: data.site.product.categories.edges.map((category: any) => ({
-                        uid: category.node.id,
+                        uid: category.node.entityId,
                         breadcrumbs: {
-                            category_uid: category.node.id
+                            category_uid: category.node.entityId
                         }
                     })),
                     description: {
                         html: data.site.product.description
                     },
                     image: {
-                        label: data.site.product.defaultImage.altText,
-                        url: data.site.product.defaultImage.urlOriginal
+                        label: data.site.product.images.edges.length !== 0 ? data.site.product.images.edges[0].node.altText : '',
+                        url: data.site.product.images.edges.length !== 0 ? data.site.product.images.edges[0].node.urlOriginal: ''
                     },
                     price: {
                         regularPrice: {
