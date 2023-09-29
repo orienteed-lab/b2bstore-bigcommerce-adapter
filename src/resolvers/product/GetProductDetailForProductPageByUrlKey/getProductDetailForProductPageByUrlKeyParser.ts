@@ -16,7 +16,7 @@ export const getProductDetailForProductPageByUrlKeyParser = (data: any): GetProd
                     },
                     uid: data.site.route.node.id,
                     id: data.site.route.node.entityId,
-                    url_key: data.site.route.node.path,
+                    url_key: data.site.route.node.path.slice(1, -1),
                     // @ts-ignore // Ignore stock_status type error because we cannot import ProductStockStatus enum from the schema
                     stock_status: data.site.route.node.inventory.isInStock ? 'IN_STOCK' : 'OUT_OF_STOCK',
                     custom_attributes: [], // TODO_B2B: Add custom attributes
@@ -25,7 +25,7 @@ export const getProductDetailForProductPageByUrlKeyParser = (data: any): GetProd
                         label: image.node.altText
                     })),
                     categories: data.site.route.node.categories.edges.map((category: any) => ({
-                        uid: category.node.id,
+                        uid: category.node.entityId,
                         id: category.node.entityId,
                         breadcrumbs: [
                             {
@@ -79,14 +79,17 @@ export const getProductDetailForProductPageByUrlKeyParser = (data: any): GetProd
                                   }
                                 : null
                         )
-                        .filter((option: any) => option !== null),
+                        .filter((option: any) => option !== null)
+                        .sort((a, b) => (a.attribute_code < b.attribute_code ? -1 : 1)),
                     variants: data.site.route.node.variants.edges.map((variant: any) => ({
                         __typename: 'ConfigurableVariant',
-                        attributes: variant.node.options.edges.map((attribute: any) => ({
-                            __typename: 'ConfigurableAttributeOption',
-                            code: attribute.node.displayName,
-                            value_index: attribute.node.values.edges[0].node.entityId
-                        })),
+                        attributes: variant.node.options.edges
+                            .map((attribute: any) => ({
+                                __typename: 'ConfigurableAttributeOption',
+                                code: attribute.node.displayName,
+                                value_index: attribute.node.values.edges[0].node.entityId
+                            }))
+                            .sort((a, b) => (a.code < b.code ? -1 : 1)),
                         product: {
                             __typename: 'SimpleProduct',
                             name: `${data.site.route.node.name} ${variant.node.options.edges.map(
@@ -138,7 +141,7 @@ export const getProductDetailForProductPageByUrlKeyParser = (data: any): GetProd
                                                           __typename: 'AttributeOption',
                                                           uid: option.node.entityId,
                                                           label: option.node.displayName,
-                                                          is_default: false//option.node.values.edges.node.isDefault // TODO_B2B: Review
+                                                          is_default: false //option.node.values.edges.node.isDefault // TODO_B2B: Review
                                                       }
                                                   ]
                                               },

@@ -3,42 +3,52 @@ import { GetProductDetailForProductPageByUrlKeyQueryVariables } from '@schema';
 
 import { getProductDetailForProductPageByUrlKeyParser } from './getProductDetailForProductPageByUrlKeyParser';
 import DEFAULT_OPERATIONS from './getProductDetailForProductPageByUrlKey.gql';
+import { useEffect, useState } from 'react';
 
-const GetProductDetailForProductPageByUrlKey = (clientProps: ClientProps) => (
-    resolverProps: GetProductDetailForProductPageByUrlKeyQueryVariables
-) => {
-    const { useQuery, mergeOperations } = clientProps;
-    const { urlKey } = resolverProps;
+interface GetProductDetailForProductPageByUrlKeyProps extends GetProductDetailForProductPageByUrlKeyQueryVariables {
+    storeConfigData: any;
+}
 
-    const operations = mergeOperations(DEFAULT_OPERATIONS);
-    const { getProductDetailForProductPageByUrlKeyQuery } = operations;
+const GetProductDetailForProductPageByUrlKey =
+    (clientProps: ClientProps) => (resolverProps: GetProductDetailForProductPageByUrlKeyProps) => {
+        const { useAwaitQuery, mergeOperations } = clientProps;
+        const { urlKey, storeConfigData } = resolverProps;
 
-    const { data, loading, error, refetch } = useQuery(getProductDetailForProductPageByUrlKeyQuery, {
-        context: {
-            headers: {
-                backendTechnology: ['bigcommerce']
+        const [parsedData, setParsedData] = useState(undefined);
+        const [loading, setLoading] = useState(true);
+        const [error, setError] = useState(undefined);
+
+        const operations = mergeOperations(DEFAULT_OPERATIONS);
+        const { getProductDetailForProductPageByUrlKeyQuery } = operations;
+        const getProduct = useAwaitQuery(getProductDetailForProductPageByUrlKeyQuery);
+
+        const refetch = async () => {
+            setLoading(true);
+            try {
+                const { data } = await getProduct({
+                    context: {
+                        headers: {
+                            backendTechnology: ['bigcommerce']
+                        }
+                    },
+                    skip: !storeConfigData,
+                    variables: {
+                        urlPath: `/${urlKey}`
+                    }
+                });
+
+                setParsedData(getProductDetailForProductPageByUrlKeyParser(data));
+            } catch (err) {
+                setError(err);
             }
-        },
-        variables: {
-            urlPath: urlKey
-        }
-    });
+            setLoading(false);
+        };
 
-    //console.log('antes del parser', data);
+        useEffect(() => {
+            refetch();
+        }, []);
 
-    let parsedData = undefined;
-    if (data) {
-        // try {
-        parsedData = getProductDetailForProductPageByUrlKeyParser(data);
-        // } catch (e) {
-        //     console.error(e);
-        // }
-    }
-
-    //console.log('despues del parser', parsedData);
-
-    return { data: parsedData, loading, error, refetch };
-    // return { data, loading, error, refetch };
-};
+        return { data: parsedData, loading, error: error, refetch };
+    };
 
 export default GetProductDetailForProductPageByUrlKey;
