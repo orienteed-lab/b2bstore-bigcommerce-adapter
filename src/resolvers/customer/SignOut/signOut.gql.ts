@@ -1,7 +1,11 @@
 import { gql } from '@apollo/client';
 
 export const SIGN_OUT = gql`
-    # Your query here
+    mutation signOut {
+        logout {
+            result
+        }
+    }
 `;
 
 export default {

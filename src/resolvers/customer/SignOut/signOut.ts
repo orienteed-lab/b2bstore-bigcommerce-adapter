@@ -1,9 +1,21 @@
 import { ClientProps } from 'src';
 
-const SignOut = (clientProps: ClientProps) => () => {
-    // Look docs for more info about how to fill this function
+import DEFAULT_OPERATIONS from './signOut.gql';
 
-    return { data: {}, loading: false, error: undefined };
+const SignOut = (clientProps: ClientProps) => () => {
+    const { mergeOperations, useMutation } = clientProps;
+
+    const { signOutMutation } = mergeOperations(DEFAULT_OPERATIONS);
+
+    const [revokeToken] = useMutation(signOutMutation, {
+        context: {
+            headers: {
+                backendTechnology: ['bigcommerce']
+            }
+        },
+    });
+
+    return { revokeToken };
 };
 
 export default SignOut;
