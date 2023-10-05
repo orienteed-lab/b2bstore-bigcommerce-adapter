@@ -3,29 +3,43 @@ import { ClientProps } from 'src';
 import { getWishlistsParser } from './getWishlistsParser';
 import DEFAULT_OPERATIONS from './getWishlists.gql';
 
-const GetWishlists = (clientProps: ClientProps) => () => {
-    const { mergeOperations, useQuery } = clientProps;
+interface GetWishlistsProps {
+    isSignedIn?: boolean;
+    hasIsSignedIn: boolean;
+    performQuery: boolean;
+}
 
-    const operations = mergeOperations(DEFAULT_OPERATIONS);
-    const { getWishlistsQuery } = operations;
+const GetWishlists =
+    (clientProps: ClientProps) =>
+    (resolverProps: GetWishlistsProps = { hasIsSignedIn: false, performQuery: true, isSignedIn: true }) => {
+        const { mergeOperations, useQuery } = clientProps;
+        const { isSignedIn, performQuery } = resolverProps;
 
-    const { data, error, loading } = useQuery(getWishlistsQuery, {
-        fetchPolicy: 'cache-and-network',
-        nextFetchPolicy: 'cache-first',
-        context: {
-            headers: {
-                backendTechnology: ['bigcommerce']
+        const operations = mergeOperations(DEFAULT_OPERATIONS);
+        const { getWishlistsQuery } = operations;
+
+        if (isSignedIn) {
+            const { data, error, loading } = useQuery(getWishlistsQuery, {
+                context: {
+                    headers: {
+                        backendTechnology: ['bigcommerce']
+                    }
+                }
+            });
+
+            let parsedData = undefined;
+            if (data) {
+                parsedData = getWishlistsParser(data);
             }
+
+            return { data: parsedData, loading, error };
         }
-    });
 
-    let parsedData = undefined;
-    if (data) {
-        parsedData = getWishlistsParser(data);
-    }
+        if (!performQuery) {
+            return { getWishlistsQuery };
+        }
 
-    return { data: parsedData, loading, error };
-
-};
+        return { data: null }; // Only gets to this return if there is a isSignedIn value and it's false
+    };
 
 export default GetWishlists;
