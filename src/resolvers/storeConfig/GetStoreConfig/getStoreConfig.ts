@@ -1,9 +1,40 @@
+import { useEffect, useState } from 'react';
 import { ClientProps } from 'src';
 
-const GetStoreConfig = (clientProps: ClientProps) => () => {
-    // Look docs for more info about how to fill this function
+import DEFAULT_OPERATIONS from './getStoreConfig.gql';
+import { getStoreConfigParser } from './getStoreConfigParser';
 
-    return { data: {}, loading: false, error: undefined };
+const GetStoreConfig = (clientProps: ClientProps) => () => {
+    const { mergeOperations, useAwaitQuery, restClient } = clientProps;
+    const [data, setData] = useState(undefined);
+
+    const { getStoreConfigQuery } = mergeOperations(DEFAULT_OPERATIONS);
+    const getConfig = useAwaitQuery(getStoreConfigQuery);
+
+    const refetch = async () => {
+        const locale = await restClient(`/api/v3/settings/store/locale`, {
+            method: 'GET',
+            headers: {
+                backendTechnology: 'bigcommerce'
+            }
+        });
+
+        const { data: configData } = await getConfig({
+            context: {
+                headers: {
+                    backendTechnology: ['bigcommerce']
+                }
+            }
+        });
+
+        setData(getStoreConfigParser(locale, configData));
+    };
+
+    useEffect(() => {
+        refetch();
+    }, []);
+
+    return { data, refetch };
 };
 
 export default GetStoreConfig;

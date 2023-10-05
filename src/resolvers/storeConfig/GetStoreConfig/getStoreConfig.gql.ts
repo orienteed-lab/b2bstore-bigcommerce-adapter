@@ -1,7 +1,20 @@
 import { gql } from '@apollo/client';
 
 export const GET_STORE_CONFIG = gql`
-    # Your query here
+    query getStoreConfig {
+        site {
+            settings {
+                storeName
+                contact {
+                    email
+                    phone
+                }
+            }
+            categoryTree {
+                entityId
+            }
+        }
+    }
 `;
 
 export default {
