@@ -1,32 +1,35 @@
 import { ClientProps } from 'src';
-import { GetProductsInWishlistsQueryVariables } from '@schema';
 
 import { getProductsInWishlistsParser } from './getProductsInWishlistsParser';
 import DEFAULT_OPERATIONS from './getProductsInWishlists.gql';
+import { useEffect, useState } from 'react';
 
 const GetProductsInWishlists = (clientProps: ClientProps) => () => {
-    const { mergeOperations, useQuery } = clientProps;
+    const { mergeOperations, useQuery, useLazyQuery } = clientProps;
+    const [data, setData] = useState({ customerWishlistProducts: [] });
+    const [client, setClient] = useState(undefined);
+
     const operations = mergeOperations(DEFAULT_OPERATIONS);
     const { getProductsInWishlistsQuery } = operations;
-
-    const { client,  data  } = useQuery(getProductsInWishlistsQuery, {
-        fetchPolicy: 'cache-and-network',
-        nextFetchPolicy: 'cache-first',
+    const [getProducts] = useLazyQuery(getProductsInWishlistsQuery, {
         context: {
             headers: {
                 backendTechnology: ['bigcommerce']
             }
         }
     });
-    
-    
 
-    let parsedData = undefined;
+    useEffect(() => {
+        const fetchData = async () => {
+            const { data: productData, client: prodClient } = await getProducts();
+            setClient(prodClient);
 
-    if (data) {
-         parsedData = getProductsInWishlistsParser(data);
-     }
-     return { data: parsedData, client};
+            setData(getProductsInWishlistsParser(productData));
+        };
+        fetchData();
+    }, []);
+
+    return { data, client, getProductsInWishlistsQuery };
 };
 
 export default GetProductsInWishlists;
