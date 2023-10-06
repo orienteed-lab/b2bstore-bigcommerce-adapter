@@ -3,14 +3,13 @@ import { GetProductDetailForAtcDialogBySkuQueryVariables } from '@schema';
 
 import { getProductDetailForATCDialogBySkuParser } from './getProductDetailForATCDialogBySkuParser';
 import DEFAULT_OPERATIONS from './getProductDetailForATCDialogBySku.gql';
+import { useEffect, useState } from 'react';
 
-interface GetProductDetailForAtcDialogBySkuProps extends GetProductDetailForAtcDialogBySkuQueryVariables {
-    optionValueIds?: [{ optionEntityId: number; valueEntityId: number }];
-}
-
-const GetProductDetailForATCDialogBySku = (clientProps: ClientProps) => (resolverProps: GetProductDetailForAtcDialogBySkuProps) => {
-    const { mergeOperations, useQuery } = clientProps;
+const GetProductDetailForATCDialogBySku = (clientProps: ClientProps) => (resolverProps: GetProductDetailForAtcDialogBySkuQueryVariables) => {
+    const { mergeOperations, useAwaitQuery } = clientProps;
     const { sku, configurableOptionValues } = resolverProps;
+    const [data, setData] = useState(undefined);
+    const [loading, setLoading] = useState(true);
     const optionValueIds = []; // In BigCommerce is required to give optionId and valueId in the query props
 
     for (let i = 0; i<configurableOptionValues.length; i=i+2) {
@@ -21,28 +20,32 @@ const GetProductDetailForATCDialogBySku = (clientProps: ClientProps) => (resolve
     };
 
     const { getProductDetailForAtcDialogBySkuQuery } = mergeOperations(DEFAULT_OPERATIONS);
+    const getDetails = useAwaitQuery(getProductDetailForAtcDialogBySkuQuery);
 
-    const { data, loading } = useQuery(getProductDetailForAtcDialogBySkuQuery, {
-        fetchPolicy: 'cache-and-network',
-        nextFetchPolicy: 'cache-first',
-        context: {
-            headers: {
-                backendTechnology: ['bigcommerce']
+    useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+            if (sku) {
+                const { data: productData } = getDetails(getProductDetailForAtcDialogBySkuQuery, {
+                    context: {
+                        headers: {
+                            backendTechnology: ['bigcommerce']
+                        }
+                    },
+                    variables: {
+                        optionValueIds,
+                        sku
+                    }
+                });
+
+                setData(getProductDetailForATCDialogBySkuParser(productData))
             }
-        },
-        variables: {
-            optionValueIds,
-            sku
-        },
-        skip: !sku
-    });
+            setLoading(false);
+        };
+        fetchData();
+    }, [])
 
-    let parsedData = undefined;
-    if (data) {
-        parsedData = getProductDetailForATCDialogBySkuParser(data);
-    }
-
-    return { data: parsedData, loading };
+    return { data, loading };
 };
 
 export default GetProductDetailForATCDialogBySku;
