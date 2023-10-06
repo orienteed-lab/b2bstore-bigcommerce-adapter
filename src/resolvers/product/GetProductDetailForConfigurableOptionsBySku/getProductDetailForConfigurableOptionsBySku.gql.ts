@@ -33,6 +33,17 @@ export const GET_PRODUCT_DETAIL_FOR_CONFIGURABLE_OPTIONS_BY_SKU = gql`
                             entityId
                             isRequired
                             isVariantOption
+                            ... on MultipleChoiceOption {
+                                values {
+                                    edges {
+                                        node {
+                                            entityId
+                                            label
+                                            isDefault
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }

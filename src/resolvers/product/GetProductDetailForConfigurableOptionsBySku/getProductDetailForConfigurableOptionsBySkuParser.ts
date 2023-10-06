@@ -30,7 +30,7 @@ export const getProductDetailForConfigurableOptionsBySkuParser = (data: any): Ge
                                 ? {
                                       __typename: 'ConfigurableProductOptions',
                                       attribute_code: option.node.displayName,
-                                      attribute_id: option.node.entityId,
+                                      attribute_id: option.node.entityId.toString(),
                                       uid: option.node.entityId,
                                       label: option.node.displayName,
                                       values:

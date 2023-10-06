@@ -3,54 +3,64 @@ import { GetProductDetailForConfigurableOptionsBySkuQueryVariables } from '@sche
 
 import { getProductDetailForConfigurableOptionsBySkuParser } from './getProductDetailForConfigurableOptionsBySkuParser';
 import DEFAULT_OPERATIONS from './getProductDetailForConfigurableOptionsBySku.gql';
+import { useState } from 'react';
 
-interface ProductLazy extends GetProductDetailForConfigurableOptionsBySkuQueryVariables {
-    lazy: boolean;
+interface GetProductDetailForConfigurableOptionsBySkuProps extends GetProductDetailForConfigurableOptionsBySkuQueryVariables {
+    isLazy: boolean;
+    cartItem?: any;
 }
-const GetProductDetailForConfigurableOptionsBySku = (clientProps: ClientProps) => (resolverProps: ProductLazy) => {
-    const { useQuery, mergeOperations, useLazyQuery, restClient } = clientProps;
-    const { lazy, sku } = resolverProps;
+const GetProductDetailForConfigurableOptionsBySku =
+    (clientProps: ClientProps) =>
+    (resolverProps: GetProductDetailForConfigurableOptionsBySkuProps = { isLazy: false, cartItem: null }) => {
+        const { useQuery, mergeOperations, useAwaitQuery } = clientProps;
+        const { isLazy, cartItem } = resolverProps;
+        const [data, setData] = useState(undefined);
+        const [loading, setLoading] = useState(!isLazy);
+        const [error, setError] = useState(undefined);
 
-    const operations = mergeOperations(DEFAULT_OPERATIONS);
-    const { getProductDetailForConfigurableOptionsBySkuQuery } = operations;
+        const operations = mergeOperations(DEFAULT_OPERATIONS);
+        const { getProductDetailForConfigurableOptionsBySkuQuery } = operations;
+        const getDetails = useAwaitQuery(getProductDetailForConfigurableOptionsBySkuQuery);
 
-    let parsedData = undefined;
+        let parsedData = undefined;
 
-    if (lazy) {
-        const [runQuery, queryResult] = useLazyQuery(getProductDetailForConfigurableOptionsBySkuQuery, {
-            fetchPolicy: 'cache-and-network',
-            nextFetchPolicy: 'cache-first',
-            context: {
-                headers: {
-                    backendTechnology: ['bigcommerce']
+        if (isLazy) {
+            const runQuery = async () => {
+                setLoading(true);
+                try {
+                    const { data: productData } = await getDetails({
+                        context: {
+                            headers: {
+                                backendTechnology: ['bigcommerce']
+                            }
+                        }
+                    });
+
+                    setData(getProductDetailForConfigurableOptionsBySkuParser(productData));
+                } catch (err) {
+                    setError(err);
                 }
-            }
-        });
-        const { data } = queryResult;
-        
-        if (data) {
-            parsedData = getProductDetailForConfigurableOptionsBySkuParser(data);
-        }
-       
-        return { queryResult: { data: parsedData }, runQuery };
-    } else {
-        const { loading, error, data } = useQuery(getProductDetailForConfigurableOptionsBySkuQuery, {
-            context: {
-                headers: {
-                    backendTechnology: ['bigcommerce']
+                setLoading(false);
+            };
+
+            return { queryResult: { data, loading, error }, runQuery };
+        } else {
+            const { loading, error, data } = useQuery(getProductDetailForConfigurableOptionsBySkuQuery, {
+                context: {
+                    headers: {
+                        backendTechnology: ['bigcommerce']
+                    }
+                },
+                variables: {
+                    sku: cartItem ? cartItem.product.sku : null
                 }
-            },
-            variables: {
-                sku: "SLLPJ-6088C959"
+            });
+
+            if (data) {
+                parsedData = getProductDetailForConfigurableOptionsBySkuParser(data);
             }
-        });
-    
-        if (data) {
-            parsedData = getProductDetailForConfigurableOptionsBySkuParser(data);
 
+            return { data: parsedData, loading, error };
         }
-
-        return { data: parsedData, loading, error };
-    }
-};
+    };
 export default GetProductDetailForConfigurableOptionsBySku;
