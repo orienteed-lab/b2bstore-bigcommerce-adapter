@@ -4,61 +4,71 @@ import { addConfigurableProductToCartParser } from './addConfigurableProductToCa
 
 import { useState } from 'react';
 
-const AddConfigurableProductToCart = (clientProps: ClientProps) => (resolverProps: AddConfigurableProductToCartMutationVariables = {cartId: "", parentSku: "", quantity: 0, sku: ""}) => {
-    const { restClient } = clientProps;
-    const { cartId, quantity, sku } = resolverProps;
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+interface AddConfigurableProductToCartProps extends AddConfigurableProductToCartMutationVariables {
+    hasProps: boolean;
+}
 
-    const addConfigurableProductToCart = ({ variables }) => {
-        let parsedData = undefined;
-        setLoading(true);
-        restClient(`/api/v3/catalog/variants?sku=CONF1-BM`, {
-            method: 'GET',
-            headers: {
-                backendTechnology: 'bigcommerce'
-            }
-        }).then((data) => {
-            parsedData = JSON.stringify(addConfigurableProductToCartParser(data, variables.quantity));
-            restClient(`/api/v3/carts/0c035cfe-0006-4fb9-b183-610c98c53c05/items`, {
-                method: 'POST',
-                headers: {
-                    backendTechnology: 'bigcommerce'
-                },
-                body: parsedData
-            });
-        }).catch((err) => {
-            setError(err);
-        }).finally(() => {
+const AddConfigurableProductToCart =
+    (clientProps: ClientProps) =>
+    (resolverProps: AddConfigurableProductToCartProps = { cartId: '', parentSku: '', quantity: 0, sku: '', hasProps: false }) => {
+        const { restClient } = clientProps;
+        const { cartId, quantity, sku, hasProps } = resolverProps;
+        const [loading, setLoading] = useState(false);
+        const [error, setError] = useState(null);
+
+        const addConfigurableProductToCart = async ({ variables }) => {
+            let parsedData = undefined;
+            setLoading(true);
+            try {
+                const data = await restClient(`/api/v3/catalog/variants?sku=${variables.sku}`, {
+                    method: 'GET',
+                    headers: {
+                        backendTechnology: 'bigcommerce'
+                    }
+                });
+                parsedData = JSON.stringify(addConfigurableProductToCartParser(data, variables.quantity));
+                await restClient(`/api/v3/carts/${variables.cartId}/items`, {
+                    method: 'POST',
+                    headers: {
+                        backendTechnology: 'bigcommerce'
+                    },
+                    body: parsedData
+                });
+            } catch (err) {
+                setError(err);
+            };
             setLoading(false);
-        })
-    };
+        };
 
-    const addConfigurableProductToCartVoid = () => {
-        let parsedData = undefined;
-        setLoading(true);
-        restClient(`/api/v3/catalog/variants?sku=${sku}`, {
-            method: 'GET',
-            headers: {
-                backendTechnology: 'bigcommerce'
-            }
-        }).then((data) => {
-            parsedData = JSON.stringify(addConfigurableProductToCartParser(data, quantity));
-            restClient(`/api/v3/carts/${cartId}/items`, {
-                method: 'POST',
-                headers: {
-                    backendTechnology: 'bigcommerce'
-                },
-                body: parsedData
-            });
-        }).catch((err) => {
-            setError(err);
-        }).finally(() => {
+        const addConfigurableProductToCartVoid = async () => {
+            let parsedData = undefined;
+            setLoading(true);
+            try {
+                const data = await restClient(`/api/v3/catalog/variants?sku=${sku}`, {
+                    method: 'GET',
+                    headers: {
+                        backendTechnology: 'bigcommerce'
+                    }
+                });
+                parsedData = JSON.stringify(addConfigurableProductToCartParser(data, quantity));
+                await restClient(`/api/v3/carts/${cartId}/items`, {
+                    method: 'POST',
+                    headers: {
+                        backendTechnology: 'bigcommerce'
+                    },
+                    body: parsedData
+                });
+            } catch (err) {
+                setError(err);
+            };
             setLoading(false);
-        })
-    };
+        };
 
-    return { addConfigurableProductToCart, addConfigurableProductToCartVoid, loading, error };
-};
+        if (hasProps) {
+            return { addConfigurableProductToCart: addConfigurableProductToCartVoid, loading, error };
+        } else {
+            return { addConfigurableProductToCart, loading, error };
+        }
+    };
 
 export default AddConfigurableProductToCart;
