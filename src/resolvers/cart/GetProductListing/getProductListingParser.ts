@@ -1,7 +1,6 @@
 import { GetProductListingQuery } from '@schema';
 
-export const getProductListingParser = ({data}: any): GetProductListingQuery => {
-    
+export const getProductListingParser = ({ data }: any): GetProductListingQuery => {
     const getItems = () => {
         var items = [];
         if (data.line_items.physical_items) {
@@ -50,23 +49,25 @@ export const getProductListingParser = ({data}: any): GetProductListingQuery => 
                                       }
                                   }
                               },
-                              variants: item.options.map((variant: any) => ({
-                                  attributes: {
-                                      uid: variant.nameId,
-                                      label: variant.value,
-                                      code: variant.name,
-                                      value_index: variant.valueId
-                                  },
-                                  product: {
-                                      uid: item.variant_id,
-                                      name: `${item.name}${item.sku}`,
-                                      sku: item.sku, // El sku por defecto es el de la variante
-                                      stock_status: 'IN_STOCK', // You can´t add a product to cart if it doesn't have stock
-                                      small_image: {
-                                          url: item.image_url // TODO_B2B: Reduce size of the image & check if it's possible to get variant image
+                              variants: [
+                                  {
+                                      attributes: item.options.map((variant: any) => ({
+                                          uid: variant.nameId,
+                                          label: variant.value,
+                                          code: variant.name,
+                                          value_index: variant.valueId
+                                      })),
+                                      product: {
+                                          uid: item.variant_id,
+                                          name: `${item.name}${item.sku}`,
+                                          sku: item.sku, // El sku por defecto es el de la variante
+                                          stock_status: 'IN_STOCK', // You can´t add a product to cart if it doesn't have stock
+                                          small_image: {
+                                              url: item.image_url // TODO_B2B: Reduce size of the image & check if it's possible to get variant image
+                                          }
                                       }
                                   }
-                              }))
+                              ]
                           },
                           quantity: item.quantity, // TODO_B2B: Check how to get total item count
                           errors: null, // BigCommerce doesn't return an error status
@@ -123,7 +124,7 @@ export const getProductListingParser = ({data}: any): GetProductListingQuery => 
                                       }
                                   }
                               },
-                              variants: []
+                              variants: null
                           },
                           quantity: item.quantity, // TODO_B2B: Check how to get total item count
                           errors: null, // BigCommerce doesn't return an error status
@@ -182,25 +183,25 @@ export const getProductListingParser = ({data}: any): GetProductListingQuery => 
                                       }
                                   }
                               },
-                              variants: item.options.map((variant: any) => ({
-                                  attributes: [
-                                      {
+                              variants: [
+                                  {
+                                      attributes: item.options.map((variant: any) => ({
                                           uid: variant.nameId,
                                           label: variant.value,
                                           code: variant.name,
                                           value_index: variant.valueId
-                                      }
-                                  ],
-                                  product: {
-                                      uid: item.variant_id,
-                                      name: `${item.name}${item.sku}`,
-                                      sku: item.sku, // El sku por defecto es el de la variante
-                                      stock_status: 'IN_STOCK', // You can´t add a product to cart if it doesn't have stock
-                                      small_image: {
-                                          url: item.image_url // TODO_B2B: Reduce size of the image & check if it's possible to get variant image
+                                      })),
+                                      product: {
+                                          uid: item.variant_id,
+                                          name: `${item.name}${item.sku}`,
+                                          sku: item.sku, // El sku por defecto es el de la variante
+                                          stock_status: 'IN_STOCK', // You can´t add a product to cart if it doesn't have stock
+                                          small_image: {
+                                              url: item.image_url // TODO_B2B: Reduce size of the image & check if it's possible to get variant image
+                                          }
                                       }
                                   }
-                              }))
+                              ]
                           },
                           quantity: item.quantity, // TODO_B2B: Check how to get total item count
                           errors: null, //BigCommerce doesn't return an error status
@@ -257,7 +258,7 @@ export const getProductListingParser = ({data}: any): GetProductListingQuery => 
                                       }
                                   }
                               },
-                              variants: []
+                              variants: null
                           },
                           quantity: item.quantity, // TODO_B2B: Check how to get total item count
                           errors: null, //BigCommerce doesn't return an error status
@@ -312,7 +313,7 @@ export const getProductListingParser = ({data}: any): GetProductListingQuery => 
                                 }
                             }
                         },
-                        variants: []
+                        variants: null
                     },
                     quantity: item.quantity, // TODO_B2B: Check how to get total item count
                     errors: null, // BigCommerce doesn't return an error status
