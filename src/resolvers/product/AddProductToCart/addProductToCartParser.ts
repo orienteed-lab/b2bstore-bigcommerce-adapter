@@ -29,7 +29,7 @@ export const addProductToCartParser = (data: any, prodId: any, varId: any) => {
                 quantity: data.product.quantity,
                 product_id: prodId,
                 variant_id: varId,
-                option_selections: options()
+                option_selections: data.product.selected_options[0] ? options() : null
             }
         ]
     };

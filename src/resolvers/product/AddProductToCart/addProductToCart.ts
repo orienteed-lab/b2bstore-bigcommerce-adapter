@@ -5,9 +5,13 @@ import { addProductToCartParser } from './addProductToCartParser';
 import DEFAULT_OPERATIONS from './addProductToCart.gql';
 import { useState } from 'react';
 
+interface AddProductToCartProps extends AddProductToCartMutationVariables {
+    initialRun?: boolean;
+}
+
 const AddProductToCart =
     (clientProps: ClientProps) =>
-    (resolverProps: AddProductToCartMutationVariables = { cartId: '', product: { quantity: 0, sku: '' } }) => {
+    (resolverProps: AddProductToCartProps = { initialRun: false, cartId: '', product: { quantity: 0, sku: '' } }) => {
         const { mergeOperations, useAwaitQuery, restClient } = clientProps;
         const { cartId, product } = resolverProps;
         const [loading, setLoading] = useState(false);
@@ -18,78 +22,75 @@ const AddProductToCart =
         const getId = useAwaitQuery(getProductIdWithSkuQuery);
 
         const addProductToCart = async ({ variables }) => {
-            let parsedData = undefined;
-            const { data } = await getId({
-                context: {
-                    headers: {
-                        backendTechnology: ['bigcommerce']
+            setLoading(true);
+            try {
+                let parsedData = undefined;
+                const { data } = await getId({
+                    context: {
+                        headers: {
+                            backendTechnology: ['bigcommerce']
+                        }
+                    },
+                    variables: {
+                        sku: variables.product.sku
                     }
-                },
-                variables: {
-                    sku: variables.product.sku
-                }
-            });
+                });
 
-            if (data) {
                 const prodId = data.site.product.entityId;
                 const varId = data.site.product.variants.edges[0].node.entityId;
                 parsedData = JSON.stringify(addProductToCartParser(variables, prodId, varId));
-                setLoading(true);
-                restClient(`/api/v3/carts/${variables.cartId}/items`, {
+
+                await restClient(`/api/v3/carts/${variables.cartId}/items`, {
                     method: 'POST',
                     headers: {
                         backendTechnology: 'bigcommerce'
                     },
                     body: parsedData
-                })
-                    .catch((err) => {
-                        setError(err);
-                    })
-                    .finally(() => {
-                        setLoading(false);
-                    });
+                });
+            } catch (err) {
+                setError(err);
             }
+            setLoading(false);
         };
 
-        const addProductToCartVoid = async () => {
-            let parsedData = undefined;
-            const variables = { cartId, product };
-            const { data } = await getId({
-                context: {
-                    headers: {
-                        backendTechnology: ['bigcommerce']
+        const addWishlistItemToCart = async () => {
+            setLoading(true);
+            try {
+                let parsedData = undefined;
+                const variables = { cartId, product };
+                const { data } = await getId({
+                    context: {
+                        headers: {
+                            backendTechnology: ['bigcommerce']
+                        }
+                    },
+                    variables: {
+                        sku: variables.product.sku
                     }
-                },
-                variables: {
-                    sku: variables.product.sku
-                }
-            });
+                });
 
-            if (data) {
+                if (variables.product.selected_options.length === 0) {
+                    
+                }
+
                 const prodId = data.site.product.entityId;
                 const varId = data.site.product.variants.edges[0].node.entityId;
                 parsedData = JSON.stringify(addProductToCartParser(variables, prodId, varId));
-                setLoading(true);
-                restClient(`/api/v3/carts/${variables.cartId}/items`, {
+
+                await restClient(`/api/v3/carts/${variables.cartId}/items`, {
                     method: 'POST',
                     headers: {
                         backendTechnology: 'bigcommerce'
                     },
                     body: parsedData
-                })
-                    .then((data) => {
-                        console.log(data);
-                    })
-                    .catch((err) => {
-                        setError(err);
-                    })
-                    .finally(() => {
-                        setLoading(false);
-                    });
+                });
+            } catch (err) {
+                setError(err);
             }
+            setLoading(false);
         };
 
-        return { addProductToCart, addProductToCartVoid, loading, error };
+        return { addProductToCart, addWishlistItemToCart, loading, error };
     };
 
 export default AddProductToCart;
