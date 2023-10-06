@@ -101,7 +101,7 @@ export const getMiniCartParser = ({ data }: any): GetMiniCartQuery => {
                                   url: item.image_url // TODO_B2B: Reduce size of the image
                               },
                               stock_status: 'IN_STOCK', // You can´t add a product to cart if it doesn't have stock
-                              variants: []
+                              variants: null
                           },
                           quantity: item.quantity,
                           configurable_options: []
@@ -187,7 +187,7 @@ export const getMiniCartParser = ({ data }: any): GetMiniCartQuery => {
                                   url: item.image_url // TODO_B2B: Reduce size of the image
                               },
                               stock_status: 'IN_STOCK', // You can´t add a product to cart if it doesn't have stock
-                              variants: []
+                              variants: null
                           },
                           quantity: item.quantity,
                           configurable_options: []
@@ -222,7 +222,7 @@ export const getMiniCartParser = ({ data }: any): GetMiniCartQuery => {
                             url: item.image_url // TODO_B2B: Reduce size of the image
                         },
                         stock_status: 'IN_STOCK', // You can´t add a product to cart if it doesn't have stock
-                        variants: []
+                        variants: null
                     },
                     quantity: item.quantity,
                     configurable_options: []
