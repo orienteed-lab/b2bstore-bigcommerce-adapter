@@ -2,31 +2,51 @@ import { ClientProps } from 'src';
 import { GetProductFiltersBySearchQueryVariables } from '@schema';
 import { getProductFiltersBySearchParser } from './getProductFiltersBySearchParser';
 import DEFAULT_OPERATIONS from './getProductFiltersBySearch.gql';
+import { useCallback, useState } from 'react';
 
 const GetProductFiltersBySearch = (clientProps: ClientProps) => (resolverProps: GetProductFiltersBySearchQueryVariables) => {
-    const { mergeOperations, useLazyQuery } = clientProps;
-    const { search } = resolverProps;
+    const { mergeOperations, useAwaitQuery } = clientProps;
+    const [data, setData] = useState(undefined);
 
     const operations = mergeOperations(DEFAULT_OPERATIONS);
     const { getProductFiltersBySearchQuery } = operations;
+    const getFilter = useAwaitQuery(getProductFiltersBySearchQuery);
 
-    let parsedData = undefined;
-
-    const [getFilters, { data, error, loading }] = useLazyQuery(getProductFiltersBySearchQuery, {
-        fetchPolicy: 'cache-and-network',
-        nextFetchPolicy: 'cache-first',
-        context: {
-            headers: {
-                backendTechnology: ['bigcommerce']
+    const getFilters = useCallback(async ({ variables }) => {
+        const { data: filterData } = await getFilter({
+            context: {
+                headers: {
+                    backendTechnology: ['bigcommerce']
+                }
+            },
+            variables: {
+                search: {
+                    searchTerm: variables.search
+                }
             }
-        }
-    });
+        });
 
-    if (data) {
-        parsedData = getProductFiltersBySearchParser(data);
-    }
+        setData(getProductFiltersBySearchParser(filterData));
+    }, []);
 
-    return { data: parsedData, loading, error, getFilters };
+    // const getFilters = async ({ variables }) => {
+    //     const { data: filterData } = await getFilter({
+    //         context: {
+    //             headers: {
+    //                 backendTechnology: ['bigcommerce']
+    //             }
+    //         },
+    //         variables: {
+    //             search: {
+    //                 searchTerm: variables.search
+    //             }
+    //         }
+    //     });
+
+    //     setData(getProductFiltersBySearchParser(filterData));
+    // };
+
+    return { data, getFilters };
 };
 
 export default GetProductFiltersBySearch;

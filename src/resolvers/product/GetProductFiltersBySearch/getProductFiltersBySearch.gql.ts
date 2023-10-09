@@ -36,6 +36,7 @@ export const GET_PRODUCT_FILTERS_BY_SEARCH = gql`
                                 ... on ProductAttributeSearchFilter {
                                     __typename
                                     name
+                                    filterName
                                     attributes {
                                         edges {
                                             node {

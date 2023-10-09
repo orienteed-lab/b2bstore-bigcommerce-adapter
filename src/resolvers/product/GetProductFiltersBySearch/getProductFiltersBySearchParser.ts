@@ -1,5 +1,4 @@
-import { Aggregation, GetProductFiltersBySearchQuery } from '@schema';
-import GetItemCount from 'src/resolvers/cart/GetItemCount/getItemCount';
+import { GetProductFiltersBySearchQuery } from '@schema';
 
 export const getProductFiltersBySearchParser = (data: any): GetProductFiltersBySearchQuery => {
     const total_quantity_category = () => {
@@ -46,11 +45,17 @@ export const getProductFiltersBySearchParser = (data: any): GetProductFiltersByS
                     ? items.push({
                           label: item.node.name,
                           count: total_quantity_category(),
-                          attribute_code: item.node.name,
-                          options: item.node.categories.edges.map((option: any) => ({
-                              label: option.node.name,
-                              value: option.node.entityId
-                          }))
+                          attribute_code: item.node.__typename,
+                          options: item.node.categories.edges
+                              .map((option: any) =>
+                                  option.node.name !== ''
+                                      ? {
+                                            label: option.node.name,
+                                            value: option.node.entityId
+                                        }
+                                      : null
+                              )
+                              .filter((option: any) => option !== null)
                       })
                     : null,
                     item.node.__typename === 'BrandSearchFilter'
@@ -69,10 +74,7 @@ export const getProductFiltersBySearchParser = (data: any): GetProductFiltersByS
                               label: item.node.name,
                               count: 0, //It can't have any options
                               attribute_code: item.node.name,
-                              options: {
-                                  label: null,
-                                  value: null
-                              }
+                              options: []
                           })
                         : null,
                     item.node.__typename === 'PriceSearchFilter'
@@ -80,10 +82,7 @@ export const getProductFiltersBySearchParser = (data: any): GetProductFiltersByS
                               label: item.node.name,
                               count: 0, //It can't have any options
                               attribute_code: item.node.name,
-                              options: {
-                                  label: null,
-                                  value: null
-                              }
+                              options: []
                           })
                         : null,
                     item.node.__typename === 'SearchProductFilter'
@@ -91,20 +90,17 @@ export const getProductFiltersBySearchParser = (data: any): GetProductFiltersByS
                               label: item.node.name,
                               count: 0, //It can't have any options
                               attribute_code: item.node.name,
-                              options: {
-                                  label: null,
-                                  value: null
-                              }
+                              options: []
                           })
                         : null,
                     item.node.__typename === 'ProductAttributeSearchFilter'
                         ? items.push({
                               label: item.node.name,
                               count: total_quantity_product(),
-                              attribute_code: item.node.name,
+                              attribute_code: item.node.filterName,
                               options: item.node.attributes.edges.map((option: any) => ({
-                                  label: option.node.name,
-                                  value: option.node.entityId
+                                  label: option.node.value,
+                                  value: option.node.value
                               }))
                           })
                         : null;
