@@ -11,14 +11,15 @@ export const GET_FILTER_INPUTS = gql`
                                 name
                                 __typename
                                 ... on ProductAttributeSearchFilter {
-                                  attributes {
-                                    edges {
-                                      node {
-                                        value
-                                        isSelected
-                                      }
+                                    filterName
+                                    attributes {
+                                        edges {
+                                            node {
+                                                value
+                                                isSelected
+                                            }
+                                        }
                                     }
-                                  }
                                 }
                             }
                         }
