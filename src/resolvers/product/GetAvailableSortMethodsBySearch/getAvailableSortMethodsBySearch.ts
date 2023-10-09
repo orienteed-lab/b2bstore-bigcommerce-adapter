@@ -3,30 +3,34 @@ import { GetAvailableSortMethodsBySearchQueryVariables } from '@schema';
 
 import { getAvailableSortMethodsBySearchParser } from './getAvailableSortMethodsBySearchParser';
 import DEFAULT_OPERATIONS from './getAvailableSortMethodsBySearch.gql';
+import { useState } from 'react';
 
 const GetAvailableSortMethodsBySearch = (clientProps: ClientProps) => (resolverProps: GetAvailableSortMethodsBySearchQueryVariables) => {
-    const { mergeOperations, useLazyQuery } = clientProps;
+    const { mergeOperations, useAwaitQuery } = clientProps;
+    const [data, setData] = useState(undefined);
 
     const operations = mergeOperations(DEFAULT_OPERATIONS);
     const { getAvailableSortMethodsBySearchQuery } = operations;
+    const getSorts = useAwaitQuery(getAvailableSortMethodsBySearchQuery);
 
-    const [getSortMethods, { data }] = useLazyQuery(getAvailableSortMethodsBySearchQuery, {
-        fetchPolicy: 'cache-and-network',
-        nextFetchPolicy: 'cache-first',
-        context: {
-            headers: {
-                backendTechnology: ['bigcommerce']
+    const getSortMethods = async ({ variables }) => {
+        const { data: sortData } = await getSorts({
+            context: {
+                headers: {
+                    backendTechnology: ['bigcommerce']
+                }
+            },
+            variables: {
+                search: {
+                    searchTerm: variables.search
+                }
             }
-        }
-    });
+        });
 
-    let parsedData = undefined;
+        setData(getAvailableSortMethodsBySearchParser(sortData));
+    };
 
-    if (data) {
-        parsedData = getAvailableSortMethodsBySearchParser(data);
-    }
-
-    return { data: parsedData, getSortMethods };
+    return { data, getSortMethods };
 };
 
 export default GetAvailableSortMethodsBySearch;
