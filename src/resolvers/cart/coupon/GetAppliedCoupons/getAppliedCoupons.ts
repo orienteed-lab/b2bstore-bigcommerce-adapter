@@ -9,15 +9,15 @@ const GetAppliedCoupons = (clientProps: ClientProps) => (resolverProps: GetAppli
     const { cartId }  = resolverProps;
  
     const [loading, setLoading] = useState(true);
-    const [data, setData] = useState<any>(null);
-    const [error, setError] = useState(null);
+    const [data, setData] = useState<any>(undefined);
+    const [error, setError] = useState(undefined);
 
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
             try {
                 const rawData = await restClient(
-                    `/api/v3/checkouts/${cartId}?include=cart.line_items.physical_items.options,cart.line_items.digital_items.options`,
+                    `/api/v3/checkouts/${cartId}`,
                     {
                         method: 'GET',
                         headers: {
@@ -26,7 +26,7 @@ const GetAppliedCoupons = (clientProps: ClientProps) => (resolverProps: GetAppli
                     }
                 );
                 
-                setData(rawData);
+                setData(getAppliedCouponsParser(rawData));
             } catch (err: any) {
                 setError(err);
             }
@@ -35,15 +35,7 @@ const GetAppliedCoupons = (clientProps: ClientProps) => (resolverProps: GetAppli
         fetchData();
     }, []);
 
-
-    let parsedData = undefined;
-    if (data) {
-
-        parsedData = getAppliedCouponsParser(data);
-
-    }
-
-    return { data: parsedData, loading, error };
+    return { data, loading, error };
 };
 
 export default GetAppliedCoupons;
