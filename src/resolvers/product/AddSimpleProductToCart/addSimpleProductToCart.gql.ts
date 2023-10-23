@@ -5,6 +5,14 @@ export const GET_PRODUCT_ID_WITH_SKU = gql`
     site {
         product(sku:$sku) {
             entityId
+            variants {
+                edges {
+                    node {
+                        entityId
+                        sku
+                    }
+                }
+            }
         }
     }
 }

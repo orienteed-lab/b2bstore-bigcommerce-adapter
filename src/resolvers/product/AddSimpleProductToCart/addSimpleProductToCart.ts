@@ -29,7 +29,8 @@ const AddSimpleProductToCart = (clientProps: ClientProps) => (resolverProps: Add
             });
 
             const prodId = data.site.product.entityId;
-            parsedData = JSON.stringify(addSimpleProductToCartParser(variables, prodId));
+            const variants = data.site.product.variants.edges;
+            parsedData = JSON.stringify(addSimpleProductToCartParser(variables, prodId, variants));
 
             await restClient(`/api/v3/carts/${variables.cartId}/items`, {
                 method: 'POST',
