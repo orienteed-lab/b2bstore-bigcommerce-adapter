@@ -34,7 +34,7 @@ const GetProductsDetailsBySearch = (clientProps: ClientProps) => (resolverProps:
         let categoryEntityId = null;
 
         for (const key in filterData) {
-            key === 'CategorySearchFilter'
+            key === 'category_id'
                 ? filterData[key].eq
                     ? (categoryEntityId = parseInt(filterData[key].eq))
                     : (categoryEntityIds = filterData[key].in.map((value) => parseInt(value)))
