@@ -20,6 +20,7 @@ export const GET_CATEGORY = gql`
                                 entityId
                                 name
                                 sku
+                                description
                                 inventory {
                                     isInStock
                                 }

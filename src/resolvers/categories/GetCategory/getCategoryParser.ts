@@ -38,6 +38,45 @@ export const getCategoryParser = (data: any, currentPage, pageSize): GetCategory
                           type_id: item.node.type,
                           url_key: item.node.path.slice(1, -1),
                           url_suffix: '.html',
+                          variants: item.node.variants.edges.map((variant: any) => ({
+                              attributes: variant.node.procuctOptions
+                                  ? variant.node.procuctOptions.edges.map((attribute: any) => ({
+                                        code: attribute.node.displayName,
+                                        value_index: attribute.node.entityId //TODO_B2B: Review
+                                    }))
+                                  : [],
+                              product: {
+                                  stock_status: variant.node.inventory.isInStock ? 'IN_STOCK' : 'OUT_OF_STOCK',
+                                  uid: variant.node.entityId,
+                                  name: `${item.node.name} ${
+                                      variant.node.procuctOptions
+                                          ? variant.node.procuctOptions.edges.map((attribute) => attribute.node.displayName)
+                                          : null
+                                  }`,
+                                  sku: variant.node.sku,
+                                  description: {
+                                      html: item.node.description
+                                  },
+                                  categories: item.node.categories.edges.map((category: any) => ({
+                                      __typename: 'CategoryTree',
+                                      name: category.node.name
+                                  })),
+                                  price: {
+                                      regularPrice: {
+                                          amount: {
+                                              currency: variant.node.prices.price.currencyCode,
+                                              value: variant.node.prices.price.value
+                                          }
+                                      },
+                                      minimalPrice: {
+                                          amount: {
+                                              currency: variant.node.prices.priceRange.min.currencyCode,
+                                              value: variant.node.prices.priceRange.min.value
+                                          }
+                                      }
+                                  }
+                              }
+                          })),
                           configurable_options: item.node.productOptions.edges.map((option: any) => ({
                               attribute_code: option.node.displayName, //TODO_B2B: is the displayName the attribute_code?
                               attribute_id: option.node.entityId,
