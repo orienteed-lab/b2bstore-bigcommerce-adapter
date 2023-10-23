@@ -37,7 +37,7 @@ export const getAutocompleteResultsParser = (data: any): GetAutocompleteResultsQ
         return total;
     };
 
-    const getItems = () => {
+    const getAggregations = () => {
         var items = [];
         data.site.search.searchProducts.filters.edges
             .map((item: any) => {
@@ -125,64 +125,191 @@ export const getAutocompleteResultsParser = (data: any): GetAutocompleteResultsQ
         return pages;
     };
 
-    return {
-        products: {
-            aggregations: getItems(),
-            items: data.site.search.searchProducts.products.edges.map((item: any) => ({
-                __typename: 'Aggregation',
-                orParentSku: item.node.sku,
-                orParentUrlKey: item.node.path,
-                //@ts-ignore // Ignore stock_status type error because we cannot import ProductStockStatus enum from the schema
-                stock_status: item.node.inventory.isInStock ? 'IN_STOCK' : 'OUT_OF_STOCK',
-                name: item.node.name,
-                sku: item.node.sku,
-                uid: item.node.id,
-                id: item.node.entityId,
-                small_image: {
-                    url: item.node.defaultImage.url
-                },
-                url_key: item.node.path,
-                url_suffix: '', //BigCommerce doesn't have url suffix
-                price: {
-                    regularPrice: {
-                        amount: {
-                            currency: item.node.prices.price.currencyCode,
-                            value: item.node.prices.price.value
+    const getItems = () => {
+        const items = [];
+
+        for (const item of data.site.search.searchProducts.products.edges) {
+            if (item.node.productOptions.edges.find((opt) => opt.node.isVariantOption)) {
+                items.push({
+                    __typename: 'ConfigurableProduct',
+                    orParentSku: item.node.sku,
+                    orParentUrlKey: item.node.path,
+                    //@ts-ignore // Ignore stock_status type error because we cannot import ProductStockStatus enum from the schema
+                    stock_status: item.node.inventory.isInStock ? 'IN_STOCK' : 'OUT_OF_STOCK',
+                    name: item.node.name,
+                    sku: item.node.sku,
+                    uid: item.node.id,
+                    id: item.node.entityId,
+                    small_image: {
+                        url: item.node.defaultImage.url
+                    },
+                    url_key: item.node.path.slice(1, -1),
+                    url_suffix: '.html',
+                    price: {
+                        regularPrice: {
+                            amount: {
+                                currency: item.node.prices.price.currencyCode,
+                                value: item.node.prices.price.value
+                            }
+                        },
+                        minimalPrice: {
+                            amount: {
+                                currency: item.node.prices.priceRange.min.currencyCode,
+                                value: item.node.prices.priceRange.min.value
+                            }
                         }
                     },
-                    minimalPrice: {
-                        amount: {
-                            currency: item.node.prices.priceRange.min.currencyCode,
-                            value: item.node.prices.priceRange.min.value
-                        }
-                    }
-                },
-                custom_attributes: item.node.productOptions.edges
-                    .map((option: any) =>
-                        !option.node.isVariantOption
-                            ? {
-                                  entered_attribute_value: {
-                                      value: option.node.defaultValue // TODO_B2B: Review
-                                  },
-                                  attribute_metadata: {
-                                      __typename: 'AttributeMetadata',
-                                      label: option.node.displayName
-                                  },
-                                  selected_attribute_options: {
-                                      __typename: 'SelectedAttributeOption',
-                                      attribute_option: [
-                                          {
-                                              __typename: 'AttributeOption',
-                                              label: option.node.displayName,
-                                              is_default: option.node.defaultValue === null ? false : true // TODO_B2B: Review
-                                          }
-                                      ]
+                    custom_attributes: item.node.productOptions.edges
+                        .map((option: any) =>
+                            !option.node.isVariantOption
+                                ? {
+                                      entered_attribute_value: {
+                                          value: option.node.defaultValue // TODO_B2B: Review
+                                      },
+                                      attribute_metadata: {
+                                          __typename: 'AttributeMetadata',
+                                          label: option.node.displayName
+                                      },
+                                      selected_attribute_options: {
+                                          __typename: 'SelectedAttributeOption',
+                                          attribute_option: [
+                                              {
+                                                  __typename: 'AttributeOption',
+                                                  label: option.node.displayName,
+                                                  is_default: option.node.defaultValue === null ? false : true // TODO_B2B: Review
+                                              }
+                                          ]
+                                      }
                                   }
-                              }
-                            : null
-                    )
-                    .filter((option: any) => option !== null)
-            })),
+                                : null
+                        )
+                        .filter((option: any) => option !== null)
+                });
+
+                item.node.variants.edges.map((variant) =>
+                    variant.node.productOptions.edges.find((opt) => opt.node.isVariantOption)
+                        ? items.push({
+                              __typename: 'SimpleProduct',
+                              orParentSku: item.node.sku,
+                              orParentUrlKey: item.node.path.slice(1, -1),
+                              stock_status: variant.node.inventory.isInStock,
+                              id: variant.node.entityId,
+                              uid: variant.node.id,
+                              name: `${item.node.name}-${variant.node.sku}`,
+                              sku: variant.node.sku,
+                              small_image: {
+                                  __typename: 'ProductImage',
+                                  url: variant.node.defaultImage ? variant.node.defaultImage.urlOriginal : item.node.defaultImage.url
+                              },
+                              url_key: item.node.path.slice(1, -1),
+                              url_suffix: '.html',
+                              price: {
+                                  __typename: 'ProductPrices',
+                                  regularPrice: {
+                                      __typename: 'Price',
+                                      amount: {
+                                          __typename: 'Money',
+                                          value: variant.node.prices.price.value,
+                                          currency: variant.node.prices.price.currencyCode
+                                      }
+                                  },
+                                  minimalPrice: {
+                                      __typename: 'Price',
+                                      amount: {
+                                          __typename: 'Money',
+                                          value: variant.node.prices.priceRange.min.value,
+                                          currency: variant.node.prices.priceRange.min.currencyCode
+                                      }
+                                  }
+                              },
+                              custom_attributes: variant.node.productOptions.edges.map((opt) => ({
+                                __typename: 'CustomAttribute',
+                                entered_attribute_value: {
+                                    __typename: 'EnteredAttributeValue',
+                                    value: null
+                                },
+                                attribute_metadata: {
+                                    __typename: 'ProductAttributeMetadata',
+                                    label: opt.node.displayName
+                                },
+                                selected_attribute_options: {
+                                    __typename: 'SelectedAttributeOption',
+                                    attribute_option: opt.node.values.edges.map((val) => ({
+                                        __typename: 'AttributeOption',
+                                        label: val.node.label,
+                                        is_default: val.node.isDefault
+                                    }))
+                                }
+                            }))
+                          })
+                        : null
+                );
+            } else {
+                items.push({
+                    __typename: 'SimpleProduct',
+                    orParentSku: item.node.sku,
+                    orParentUrlKey: item.node.path,
+                    //@ts-ignore // Ignore stock_status type error because we cannot import ProductStockStatus enum from the schema
+                    stock_status: item.node.inventory.isInStock ? 'IN_STOCK' : 'OUT_OF_STOCK',
+                    name: item.node.name,
+                    sku: item.node.sku,
+                    uid: item.node.id,
+                    id: item.node.entityId,
+                    small_image: {
+                        url: item.node.defaultImage.url
+                    },
+                    url_key: item.node.path.slice(1, -1),
+                    url_suffix: '.html',
+                    price: {
+                        regularPrice: {
+                            amount: {
+                                currency: item.node.prices.price.currencyCode,
+                                value: item.node.prices.price.value
+                            }
+                        },
+                        minimalPrice: {
+                            amount: {
+                                currency: item.node.prices.priceRange.min.currencyCode,
+                                value: item.node.prices.priceRange.min.value
+                            }
+                        }
+                    },
+                    custom_attributes: item.node.productOptions.edges
+                        .map((option: any) =>
+                            !option.node.isVariantOption
+                                ? {
+                                      entered_attribute_value: {
+                                          value: option.node.defaultValue // TODO_B2B: Review
+                                      },
+                                      attribute_metadata: {
+                                          __typename: 'AttributeMetadata',
+                                          label: option.node.displayName
+                                      },
+                                      selected_attribute_options: {
+                                          __typename: 'SelectedAttributeOption',
+                                          attribute_option: [
+                                              {
+                                                  __typename: 'AttributeOption',
+                                                  label: option.node.displayName,
+                                                  is_default: option.node.defaultValue === null ? false : true // TODO_B2B: Review
+                                              }
+                                          ]
+                                      }
+                                  }
+                                : null
+                        )
+                        .filter((option: any) => option !== null)
+                })
+            }
+        };
+
+        return items;
+    };
+
+    return {
+        products: {
+            aggregations: getAggregations(),
+            items: getItems(),
             page_info: {
                 total_pages: products_per_page()
             },

@@ -42,6 +42,7 @@ export const GET_AUTOCOMPLETE_RESULTS = gql`
                                             __typename
                                             displayName
                                             entityId
+                                            isVariantOption
                                         }
                                     }
                                 }
@@ -55,6 +56,51 @@ export const GET_AUTOCOMPLETE_RESULTS = gql`
                                 path
                                 defaultImage {
                                     url(width: 320)
+                                }
+                                variants {
+                                    edges {
+                                        node {
+                                            sku
+                                            id
+                                            entityId
+                                            inventory {
+                                                isInStock
+                                            }
+                                            defaultImage {
+                                                urlOriginal
+                                            }
+                                            prices {
+                                                price {
+                                                    value
+                                                    currencyCode
+                                                }
+                                                priceRange {
+                                                    min {
+                                                        value
+                                                        currencyCode
+                                                    }
+                                                }
+                                            }
+                                            productOptions {
+                                                edges {
+                                                    node {
+                                                        ... on MultipleChoiceOption {
+                                                            displayName
+                                                            isVariantOption
+                                                            values {
+                                                                edges {
+                                                                    node {
+                                                                        label
+                                                                        isDefault
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }

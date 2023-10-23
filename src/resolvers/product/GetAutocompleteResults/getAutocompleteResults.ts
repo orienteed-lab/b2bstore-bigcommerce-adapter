@@ -3,7 +3,7 @@ import { GetAutocompleteResultsQueryVariables } from '@schema';
 
 import { getAutocompleteResultsParser } from './getAutocompleteResultsParser';
 import DEFAULT_OPERATIONS from './getAutocompleteResults.gql';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 interface GetAutocompleteResultsProps extends GetAutocompleteResultsQueryVariables {
     hasVars: boolean
