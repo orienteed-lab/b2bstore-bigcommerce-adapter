@@ -15,7 +15,7 @@ const GetProductDetailForQuickOrderBySku =
         const getProductDetail = useAwaitQuery(getProductDetailForQuickOrderBySkuQuery);
 
         const getproduct = async ({ variables }) => {
-            const data = await getProductDetail({
+            const { data } = await getProductDetail({
                 context: {
                     headers: {
                         backendTechnology: ['bigcommerce']
@@ -29,7 +29,7 @@ const GetProductDetailForQuickOrderBySku =
             let parsedData = undefined;
 
             if (data) {
-                parsedData = getProductDetailForQuickOrderBySkuParser(data.data);
+                parsedData = getProductDetailForQuickOrderBySkuParser(data, variables.sku);
             }
 
             return { data: parsedData };

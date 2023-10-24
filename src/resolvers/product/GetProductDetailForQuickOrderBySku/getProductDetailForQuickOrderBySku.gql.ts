@@ -27,6 +27,33 @@ export const GET_PRODUCT_FOR_QUICK_ORDER_BY_SKU = gql`
                                         value
                                     }
                                 }
+                                inventory {
+                                    isInStock
+                                }
+                                variants {
+                                    edges {
+                                        node {
+                                            entityId
+                                            id
+                                            sku
+                                            prices {
+                                                priceRange {
+                                                    min {
+                                                        currencyCode
+                                                        value
+                                                    }
+                                                }
+                                                price {
+                                                    currencyCode
+                                                    value
+                                                }
+                                            }
+                                            inventory {
+                                                isInStock
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
