@@ -27,7 +27,7 @@ const GetImageBySku = (clientProps: ClientProps) => (resolverProps: GetImageBySk
         });
 
         try {
-            parsedData = getImageBySkuParser(data);
+            parsedData = getImageBySkuParser(data, variables.sku);
         } catch (e) {
             console.error(e);
         }

@@ -9,6 +9,17 @@ query imageBySku($productSku: String) {
           defaultImage {
             urlOriginal
           }
+          variants {
+            edges {
+              node {
+                id
+                sku
+                defaultImage {
+                  urlOriginal
+                }
+              }
+            }
+          }
         }
       }
   }
