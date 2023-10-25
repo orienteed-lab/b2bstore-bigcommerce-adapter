@@ -1,9 +1,13 @@
 import { gql } from '@apollo/client';
 
-export const GET_CUSTOMER_ORDERS_FOR_CSR = gql`
-    # Your query here
+export const GET_CUSTOMER_ID = gql`
+    query getCustomerId {
+        customer {
+            entityId
+        }
+    }
 `;
 
 export default {
-    getCustomerOrdersForCsrQuery: GET_CUSTOMER_ORDERS_FOR_CSR
+    getCustomerIdQuery: GET_CUSTOMER_ID
 };
