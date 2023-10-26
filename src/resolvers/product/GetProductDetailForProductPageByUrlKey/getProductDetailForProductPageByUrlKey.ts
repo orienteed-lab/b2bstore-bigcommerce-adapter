@@ -1,54 +1,15 @@
 import { ClientProps } from 'src';
 import { GetProductDetailForProductPageByUrlKeyQueryVariables } from '@schema';
 
-import { getProductDetailForProductPageByUrlKeyParser } from './getProductDetailForProductPageByUrlKeyParser';
-import DEFAULT_OPERATIONS from './getProductDetailForProductPageByUrlKey.gql';
-import { useEffect, useState } from 'react';
-
-interface GetProductDetailForProductPageByUrlKeyProps extends GetProductDetailForProductPageByUrlKeyQueryVariables {
+interface GetProductDetailForProductPageByUrlKeyProps extends GetProductDetailForProductPageByUrlKeyQueryVariables { // Use this interface to get the store config data from the call
     storeConfigData: any;
 }
 
 const GetProductDetailForProductPageByUrlKey =
     (clientProps: ClientProps) => (resolverProps: GetProductDetailForProductPageByUrlKeyProps) => {
-        const { useAwaitQuery, mergeOperations } = clientProps;
-        const { urlKey, storeConfigData } = resolverProps;
+        // Look docs for more info about how to fill this function
 
-        const [parsedData, setParsedData] = useState(undefined);
-        const [loading, setLoading] = useState(true);
-        const [error, setError] = useState(undefined);
-
-        const operations = mergeOperations(DEFAULT_OPERATIONS);
-        const { getProductDetailForProductPageByUrlKeyQuery } = operations;
-        const getProduct = useAwaitQuery(getProductDetailForProductPageByUrlKeyQuery);
-
-        const refetch = async () => {
-            setLoading(true);
-            try {
-                const { data } = await getProduct({
-                    context: {
-                        headers: {
-                            backendTechnology: ['bigcommerce']
-                        }
-                    },
-                    skip: !storeConfigData,
-                    variables: {
-                        urlPath: `/${urlKey}`
-                    }
-                });
-
-                setParsedData(getProductDetailForProductPageByUrlKeyParser(data));
-            } catch (err) {
-                setError(err);
-            }
-            setLoading(false);
-        };
-
-        useEffect(() => {
-            refetch();
-        }, []);
-
-        return { data: parsedData, loading, error: error, refetch };
+        return { data: {}, loading: false, error: undefined };
     };
 
 export default GetProductDetailForProductPageByUrlKey;
