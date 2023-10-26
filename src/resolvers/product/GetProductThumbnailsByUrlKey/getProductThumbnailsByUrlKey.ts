@@ -26,7 +26,7 @@ const GetProductThumbnailsByUrlKey = (clientProps: ClientProps) => (resolverProp
                         }
                     },
                     variables: {
-                        url: urlKeys[i]
+                        url: `/${urlKeys[i]}`
                     }
                 });
         
