@@ -13,7 +13,7 @@ export const getProductThumbnailsByUrlKeyParser = (data: any): GetProductThumbna
                               label: item.images.edges[0].node.altText,
                               url: item.images.edges[0].node.url
                           },
-                          url_key: item.path,
+                          url_key: item.path.slice(1, -1),
                           variants: item.variants.edges.map((variant) => ({
                               product: {
                                   sku: variant.node.sku,

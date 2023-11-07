@@ -88,27 +88,31 @@ const GetCustomerOrders =
 
             const getCustomerOrders = async () => {
                 setLoading(true);
-                const { data: customerData } = await getCustomer({
-                    context: {
-                        headers: {
-                            backendTechnology: ['bigcommerce']
+                try {
+                    const { data: customerData } = await getCustomer({
+                        context: {
+                            headers: {
+                                backendTechnology: ['bigcommerce']
+                            }
                         }
-                    }
-                });
+                    });
 
-                const rawData = await restClient(
-                    `/api/v2/orders/?customer_id=${customerData.customer.entityId}&limit=${pageSize}&include=consignments.line_items`,
-                    {
-                        method: 'GET',
-                        headers: {
-                            backendTechnology: 'bigcommerce'
+                    const rawData = await restClient(
+                        `/api/v2/orders/?customer_id=${customerData.customer.entityId}&limit=${pageSize}&include=consignments.line_items`,
+                        {
+                            method: 'GET',
+                            headers: {
+                                backendTechnology: 'bigcommerce'
+                            }
                         }
-                    }
-                );
+                    );
 
-                const { ordersProducts } = await getUrlPath(rawData);
+                    const { ordersProducts } = await getUrlPath(rawData);
 
-                setData(getCustomerOrdersParser(rawData, filter.number.match, ordersProducts));
+                    setData(getCustomerOrdersParser(rawData, filter.number.match, ordersProducts));
+                } catch (err) {
+                    setError(err);
+                }
                 setLoading(false);
             };
             getCustomerOrders();

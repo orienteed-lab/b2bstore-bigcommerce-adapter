@@ -21,7 +21,7 @@ export const getCustomerOrdersParser = (data: any, filter: any, ordersProducts: 
     const getUrl = (orderId, productId) => {
         const url = ordersProducts.find((order) => order.orderId == orderId).items.find((item) => item.productId == productId).urlKey;
 
-        return url;
+        return url.slice(1, -1);
     };
 
     const getItems = (order) => {
@@ -233,7 +233,7 @@ export const getCustomerOrdersParser = (data: any, filter: any, ordersProducts: 
                     }
                 ],
                 shipments: getShipments(order),
-                shipping_address: {
+                shipping_address: order.consignments[0].shipping.length !== 0 ? {
                     city: order.consignments[0].shipping[0].city,
                     country_code: order.consignments[0].shipping[0].country_iso2,
                     firstname: order.consignments[0].shipping[0].first_name,
@@ -242,15 +242,15 @@ export const getCustomerOrdersParser = (data: any, filter: any, ordersProducts: 
                     region: order.consignments[0].shipping[0].state,
                     street: [order.consignments[0].shipping[0].street_1],
                     telephone: order.consignments[0].shipping[0].phone
-                },
-                shipping_method: order.consignments[0].shipping[0].shipping_method,
+                } : null,
+                shipping_method: order.consignments[0].shipping[0]?.shipping_method,
                 status: order.status === 'Completed' ? 'Complete' : order.status === 'Cancelled' ? 'Cancelled' : order.status,
                 total: {
                     discounts: [
                         {
                             amount: {
                                 currency: order.currency_code,
-                                value: Number(order.discont_amuont)
+                                value: Number(order.discount_amuont)
                             }
                         }
                     ],
