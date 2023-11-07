@@ -1,51 +1,18 @@
 import { ClientProps } from 'src';
 import { AddSimpleProductToCartMutationVariables } from '@schema';
-import { addSimpleProductToCartParser } from './addSimpleProductToCartParser';
 
-import DEFAULT_OPERATIONS from './addSimpleProductToCart.gql';
 import { useState } from 'react';
 
 const AddSimpleProductToCart = (clientProps: ClientProps) => (resolverProps: AddSimpleProductToCartMutationVariables) => {
-    const { mergeOperations, useAwaitQuery, restClient } = clientProps;
+    // TODO_B2BStore: Complete this resolver using the REST API of BigCommerce to add the products to cart, use GraphQL to get the necessary information
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState(undefined);
 
-    const { getProductIdWithSkuQuery } = mergeOperations(DEFAULT_OPERATIONS);
-    const getId = useAwaitQuery(getProductIdWithSkuQuery);
-
-    const addSimpleProductToCart = async ({ variables }) => {
-        let parsedData = undefined;
-        setLoading(true);
-        try {
-            const { data } = await getId({
-                context: {
-                    headers: {
-                        backendTechnology: ['bigcommerce']
-                    }
-                },
-                variables: {
-                    sku: variables.sku
-                }
-            });
-
-            const prodId = data.site.product.entityId;
-            const variants = data.site.product.variants.edges;
-            parsedData = JSON.stringify(addSimpleProductToCartParser(variables, prodId, variants));
-
-            await restClient(`/api/v3/carts/${variables.cartId}/items`, {
-                method: 'POST',
-                headers: {
-                    backendTechnology: 'bigcommerce'
-                },
-                body: parsedData
-            });
-        } catch (err) {
-            setError(err);
-        };
-        setLoading(false);
+    const addSimpleProductToCart = ({}) => {
+        // TODO_B2BStore: We need to get parameters from the front; inside we will have functions that require await
     };
 
-    return { addSimpleProductToCart, loading, error };
+    return { addSimpleProductToCart, loading, error }; // Return of the necessary variables. You don't need to touch this, just understand what is needed. Notice that THERE IS NO RETURN OF DATA
 };
 
 export default AddSimpleProductToCart;

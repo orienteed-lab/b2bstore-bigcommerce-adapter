@@ -1,21 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const GET_PRODUCT_ID_WITH_SKU = gql`
-    query getProductIdWithSKU($sku:String) {
-    site {
-        product(sku:$sku) {
-            entityId
-            variants {
-                edges {
-                    node {
-                        entityId
-                        sku
-                    }
-                }
-            }
-        }
-    }
-}
+#  Write a query that allows you to get the entityId of a product providing the sku
 `;
 
 export default {

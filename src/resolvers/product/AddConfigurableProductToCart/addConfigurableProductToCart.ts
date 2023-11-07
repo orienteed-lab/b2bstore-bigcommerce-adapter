@@ -1,69 +1,31 @@
 import { ClientProps } from 'src';
 import { AddConfigurableProductToCartMutationVariables } from '@schema';
-import { addConfigurableProductToCartParser } from './addConfigurableProductToCartParser';
 
 import { useState } from 'react';
 
 interface AddConfigurableProductToCartProps extends AddConfigurableProductToCartMutationVariables {
+    // Needed interface to add the necessary props from the front
     hasProps: boolean;
 }
 
 const AddConfigurableProductToCart =
     (clientProps: ClientProps) =>
     (resolverProps: AddConfigurableProductToCartProps = { cartId: '', parentSku: '', quantity: 0, sku: '', hasProps: false }) => {
-        const { restClient } = clientProps;
-        const { cartId, quantity, sku, hasProps } = resolverProps;
+        // TODO_B2BStore: Complete this resolver using the REST API of BigCommerce
+        const { hasProps } = resolverProps;
         const [loading, setLoading] = useState(false);
-        const [error, setError] = useState(null);
+        const [error, setError] = useState(undefined);
 
-        const addConfigurableProductToCart = async ({ variables }) => {
-            let parsedData = undefined;
-            setLoading(true);
-            try {
-                const data = await restClient(`/api/v3/catalog/variants?sku=${variables.sku}`, {
-                    method: 'GET',
-                    headers: {
-                        backendTechnology: 'bigcommerce'
-                    }
-                });
-                parsedData = JSON.stringify(addConfigurableProductToCartParser(data, variables.quantity));
-                await restClient(`/api/v3/carts/${variables.cartId}/items`, {
-                    method: 'POST',
-                    headers: {
-                        backendTechnology: 'bigcommerce'
-                    },
-                    body: parsedData
-                });
-            } catch (err) {
-                setError(err);
-            };
-            setLoading(false);
+        const addConfigurableProductToCartVoid = () => {
+            // TODO_B2BStore: inside we will have functions that require await
         };
 
-        const addConfigurableProductToCartVoid = async () => {
-            let parsedData = undefined;
-            setLoading(true);
-            try {
-                const data = await restClient(`/api/v3/catalog/variants?sku=${sku}`, {
-                    method: 'GET',
-                    headers: {
-                        backendTechnology: 'bigcommerce'
-                    }
-                });
-                parsedData = JSON.stringify(addConfigurableProductToCartParser(data, quantity));
-                await restClient(`/api/v3/carts/${cartId}/items`, {
-                    method: 'POST',
-                    headers: {
-                        backendTechnology: 'bigcommerce'
-                    },
-                    body: parsedData
-                });
-            } catch (err) {
-                setError(err);
-            };
-            setLoading(false);
+        const addConfigurableProductToCart = ({}) => {
+            // TODO_B2BStore: We need to get parameters from the front; inside we will have functions that require await
         };
 
+        
+        // Conditional for all the possible returns of this resolver. You don't need to touch this, just understand what is needed in each case. Notice that THERE IS NO RETURN OF DATA
         if (hasProps) {
             return { addConfigurableProductToCart: addConfigurableProductToCartVoid, loading, error };
         } else {
