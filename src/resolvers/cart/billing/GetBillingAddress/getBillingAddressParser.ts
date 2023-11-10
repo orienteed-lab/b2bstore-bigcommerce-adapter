@@ -4,7 +4,7 @@ export const getBillingAddressParser = (data: any): GetBillingAddressQuery => {
     return {
       cart: {
         __typename: 'Cart',
-        id: data.billing_address.id,
+        id: data.id,
         billingAddress: data.billing_address
           ? {
               __typename: 'BillingCartAddress',
@@ -20,14 +20,22 @@ export const getBillingAddressParser = (data: any): GetBillingAddressQuery => {
                     code: data.billing_address.country_code,
                     label: data.billing_address.country,
                   }
-                : null,
+                : {
+                  __typename: 'CartAddressCountry',
+                  code: null,
+                  label: null,
+                },
               region: data.billing_address.state_or_province_code
                 ? {
                     __typename: 'CartAddressRegion',
                     code: data.billing_address.state_or_province_code,
                     label: data.billing_address.state_or_province,
                   }
-                : null,
+                : {
+                  __typename: 'CartAddressRegion',
+                  code: null,
+                  label: null,
+                },
             }
           : null,
       },
