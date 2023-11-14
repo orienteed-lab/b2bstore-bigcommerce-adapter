@@ -1,9 +1,13 @@
 import { gql } from '@apollo/client';
 
-export const GET_SAVED_PAYMENTS = gql`
-    # Your query here
+export const GET_CUSTOMER_ID = gql`
+    query getCustomerId {
+        customer {
+            entityId
+        }
+    }
 `;
 
 export default {
-    getSavedPaymentsQuery: GET_SAVED_PAYMENTS
+    getCustomerIdQuery: GET_CUSTOMER_ID
 };
