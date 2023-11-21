@@ -2,11 +2,15 @@ import { GetPaymentMethodsQuery } from '@schema';
 
 export const getPaymentMethodsParser = (data: any, orderData): GetPaymentMethodsQuery => {
     const types = {
+        // BigCommerce types: Manual, Credit Card, Cash,Test Payment Gateway, etc.
         store_credit: 'creditsystem',
-        gift_certificate: 'braintree', // TODO_B2BStore: Create a new file for gift certificate payments. This is MUST be changed
-        card: 'braintree', // TODO_B2BStore: Check how to get the common credit card view
+        gift_certificate: 'giftcertificate', // TODO_B2BStore: Create a new file for gift certificate payments. This is MUST be changed
+        card: 'banktransfer', // TODO_B2BStore: Check how to get the common credit card view
         braintree: 'braintree',
-        bank_deposit: 'banktransfer'
+        bank_deposit: 'banktransfer',
+        'Credit Card': 'braintree',
+        Cash: 'creditsystem',
+        scheme: 'braintree'
     };
 
     return {
