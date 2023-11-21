@@ -12,7 +12,7 @@ const GetProductFiltersBySearch = (clientProps: ClientProps) => (resolverProps: 
     const { getProductFiltersBySearchQuery } = operations;
     const getFilter = useAwaitQuery(getProductFiltersBySearchQuery);
 
-    const getFilters = useCallback(async ({ variables }) => {
+    const getFilters = async ({ variables }) => {
         const { data: filterData } = await getFilter({
             context: {
                 headers: {
@@ -27,24 +27,7 @@ const GetProductFiltersBySearch = (clientProps: ClientProps) => (resolverProps: 
         });
 
         setData(getProductFiltersBySearchParser(filterData));
-    }, []);
-
-    // const getFilters = async ({ variables }) => {
-    //     const { data: filterData } = await getFilter({
-    //         context: {
-    //             headers: {
-    //                 backendTechnology: ['bigcommerce']
-    //             }
-    //         },
-    //         variables: {
-    //             search: {
-    //                 searchTerm: variables.search
-    //             }
-    //         }
-    //     });
-
-    //     setData(getProductFiltersBySearchParser(filterData));
-    // };
+    };
 
     return { data, getFilters };
 };

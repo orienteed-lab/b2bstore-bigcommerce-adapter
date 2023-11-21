@@ -20,7 +20,7 @@ const GetProductsDetailsBySearch = (clientProps: ClientProps) => (resolverProps:
         if (sort.name != undefined) {
             return sort.name === 'ASC' ? 'A_TO_Z' : 'Z_TO_A';
         } else if (sort.price != undefined) {
-            return sort.price === 'ASC' ? 'LOW_TO_HIGH' : 'HISH_TO_LOW';
+            return sort.price === 'ASC' ? 'LOWEST_PRICE' : 'HIGHEST_PRICE';
         } else if (sort.relevance != undefined) {
             return sort.relevance === 'DESC' ? 'RELEVANCE' : 'FEATURED';
         } else {
