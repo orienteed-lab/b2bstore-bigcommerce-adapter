@@ -2,9 +2,31 @@ import { ClientProps } from 'src';
 import { SetOrderAttributesMutationVariables } from '@schema';
 
 const SetOrderAttributes = (clientProps: ClientProps) => (resolverProps: SetOrderAttributesMutationVariables) => {
-    // Look docs for more info about how to fill this function
+    const { restClient } = clientProps;
 
-    return { data: {}, loading: false, error: undefined };
+    const customAttributeQuoteSave = async ({ variables }) => {
+        const { data: orderData } = await restClient(`/api/v2/orders?cart_id=${variables.masked_id}`, {
+            method: 'GET',
+            headers: {
+                backendTechnology: 'bigcommerce'
+            }
+        });
+
+        if (orderData) {
+            await restClient(`/api/v2/orders/${orderData[0].id}`, {
+                method: 'PUT',
+                headers: {
+                    backendTechnology: 'bigcommerce'
+                },
+                body: JSON.stringify({
+                    customer_message: variables.comment,
+                    external_order_id: variables.external_order_number
+                })
+            });
+        }
+    };
+
+    return { customAttributeQuoteSave };
 };
 
 export default SetOrderAttributes;
