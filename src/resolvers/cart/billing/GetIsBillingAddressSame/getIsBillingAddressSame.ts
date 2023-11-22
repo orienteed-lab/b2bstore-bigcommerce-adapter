@@ -1,10 +1,39 @@
 import { ClientProps } from 'src';
 import { GetIsBillingAddressSameQueryVariables } from '@schema';
 
-const GetIsBillingAddressSame = (clientProps: ClientProps) => (resolverProps: GetIsBillingAddressSameQueryVariables) => {
-    // Look docs for more info about how to fill this function
+import { getIsBillingAddressSameParser } from './getIsBillingAddressSameParser';
+import { useEffect, useState } from 'react';
 
-    return { data: {}, loading: false, error: undefined };
+const GetIsBillingAddressSame = (clientProps: ClientProps) => (resolverProps: GetIsBillingAddressSameQueryVariables) => {
+    const { restClient } = clientProps;
+    const [data, setData] = useState<any>(null);
+    const {cartId}= resolverProps
+    
+    useEffect(() => {
+        const fetchIsBillingAddressSame = async () => {
+        
+            if(cartId){                
+                const checkoutData = await restClient(
+                    `/api/v3/checkouts/${cartId}`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            backendTechnology: 'bigcommerce'
+                        }
+                    }
+                );
+                setData(getIsBillingAddressSameParser(checkoutData.data)) 
+            }
+    
+        }
+        
+        fetchIsBillingAddressSame();
+        
+    },[])
+    
+    console.log("Data: ", data)
+    return { data: data };
+
 };
 
 export default GetIsBillingAddressSame;
