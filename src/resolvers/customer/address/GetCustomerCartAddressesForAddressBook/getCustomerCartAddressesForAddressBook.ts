@@ -15,9 +15,6 @@ const GetCustomerCartAddressesForAddressBook = (clientProps: ClientProps) => (re
     const [data, setData] = useState(undefined);
     const [loading, setLoading] = useState(true);
 
-    console.log("Entrando en getCustomerCartAddresses")
-    console.log(isSignedIn)
-    console.log(cartId)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -40,7 +37,6 @@ const GetCustomerCartAddressesForAddressBook = (clientProps: ClientProps) => (re
         fetchData();
     }, [])
 
-    console.log(data)
     return { data, loading };
 };
 
