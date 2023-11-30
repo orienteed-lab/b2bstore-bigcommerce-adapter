@@ -29,7 +29,7 @@ export const getCategoryParser = (data: any, currentPage, pageSize): GetCategory
                 item.node.variants.edges.length != 0 && item.node.variants.edges[0].node.productOptions.edges.length != 0
                     ? {
                           __typename: 'ConfigurableProduct',
-                          id: item.node.id,
+                          id: item.node.entityId,
                           uid: item.node.entityId.toString(),
                           name: item.node.name,
                           sku: item.node.sku,
@@ -47,7 +47,7 @@ export const getCategoryParser = (data: any, currentPage, pageSize): GetCategory
                                   : [],
                               product: {
                                   stock_status: variant.node.inventory.isInStock ? 'IN_STOCK' : 'OUT_OF_STOCK',
-                                  uid: variant.node.entityId,
+                                  uid: variant.node.entityId.toString(),
                                   name: `${item.node.name} ${
                                       variant.node.procuctOptions
                                           ? variant.node.procuctOptions.edges.map((attribute) => attribute.node.displayName)
@@ -113,7 +113,7 @@ export const getCategoryParser = (data: any, currentPage, pageSize): GetCategory
                                       : [],
                                   product: {
                                       stock_status: variant.node.inventory.isInStock ? 'IN_STOCK' : 'OUT_OF_STOCK',
-                                      uid: variant.node.entityId,
+                                      uid: variant.node.entityId.toString(),
                                       name: `${item.node.name} ${
                                           variant.node.procuctOptions
                                               ? variant.node.procuctOptions.edges.map((attribute) => attribute.node.displayName)
@@ -172,7 +172,7 @@ export const getCategoryParser = (data: any, currentPage, pageSize): GetCategory
                       }
                     : {
                           __typename: 'SimpleProduct',
-                          id: item.node.id,
+                          id: item.node.entityId,
                           uid: item.node.entityId.toString(),
                           name: item.node.name,
                           sku: item.node.sku,
