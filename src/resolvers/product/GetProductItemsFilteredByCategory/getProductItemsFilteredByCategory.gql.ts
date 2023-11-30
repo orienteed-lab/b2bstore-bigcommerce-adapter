@@ -17,6 +17,13 @@ export const GET_PRODUCT_ITEMS_FILTERED_BY_CATEGORY = gql`
                         name
                         path
                         sku
+                        variants {
+                            edges {
+                                node {
+                                    entityId
+                                }
+                            }
+                        }
                     }
                 }
             }

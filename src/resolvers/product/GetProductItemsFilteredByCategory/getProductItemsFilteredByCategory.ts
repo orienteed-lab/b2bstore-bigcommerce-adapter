@@ -3,35 +3,33 @@ import { GetProductItemsFilteredByCategoryQueryVariables } from '@schema';
 
 import { getProductItemsFilteredByCategoryParser } from './getProductItemsFilteredByCategoryParser';
 import DEFAULT_OPERATIONS from './getProductItemsFilteredByCategory.gql';
+import { useCallback, useState } from 'react';
 
 const GetProductItemsFilteredByCategory =
     (clientProps: ClientProps) => (resolverProps: GetProductItemsFilteredByCategoryQueryVariables) => {
-        const { useLazyQuery, mergeOperations } = clientProps;
+        const { mergeOperations, useAwaitQuery } = clientProps;
+        const [data, setData] = useState(undefined);
 
         const operations = mergeOperations(DEFAULT_OPERATIONS);
         const { getProductItemsFilteredByCategoryQuery } = operations;
 
-        const [getFilters, { data }] = useLazyQuery(getProductItemsFilteredByCategoryQuery, {
-            fetchPolicy: 'cache-and-network',
-            nextFetchPolicy: 'cache-first',
-            context: {
-                headers: {
-                    backendTechnology: ['bigcommerce']
+        const getProducts = useAwaitQuery(getProductItemsFilteredByCategoryQuery);
+
+        const getFilters = async ({variables}) => {
+            const { data: product } = await getProducts({
+                context: {
+                    headers: {
+                        backendTechnology: ['bigcommerce']
+                    }
+                },
+                variables: {
+                    category: parseInt(variables.categoryIdFilter.eq)
                 }
-            }
-        });
+            });
+            setData(getProductItemsFilteredByCategoryParser(product));
+        };
 
-        let parsedData = undefined;
-
-        if (data) {
-            try {
-                parsedData = getProductItemsFilteredByCategoryParser(data);
-            } catch (e) {
-                console.error(e);
-            }
-        }
-
-        return { getFilters, data: parsedData };
+        return { getFilters, data };
     };
 
 export default GetProductItemsFilteredByCategory;

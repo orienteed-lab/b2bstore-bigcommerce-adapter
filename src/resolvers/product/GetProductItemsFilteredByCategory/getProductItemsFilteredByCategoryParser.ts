@@ -4,13 +4,13 @@ export const getProductItemsFilteredByCategoryParser = (data: any): GetProductIt
    return{
     products:  {
         items: data.site.category.products.edges.map((item: any) => ({
-            __typename: 'ConfigurableProduct',
+            __typename: item.node.variants.edges.length !== 0 ? 'ConfigurableProduct' : 'SimpleProduct',
             id: item.node.entityId,
             uid: item.node.id,
             name: item.node.name,
             sku: item.node.sku,
-            url_key: item.node.path,
-            url_suffix: ''
+            url_key: item.node.path.slice(1, -1),
+            url_suffix: '.html'
         }))
     }
 };
