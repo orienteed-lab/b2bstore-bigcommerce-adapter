@@ -32,11 +32,12 @@ const SetPaymentMethodOnCart = (clientProps: ClientProps) => (resolverProps: Set
                 headers: {
                     backendTechnology: 'bigcommerce'
                 },
-                body: JSON.stringify({ payment_method: types[variables.payment_method] })
+                body: JSON.stringify({ payment_method: types[variables.payment_method.code], status_id: 0 })
             });
         } catch (err) {
             setError(err);
         }
+        setLoading(false)
     };
 
     return { fetch, loading, error, called };
