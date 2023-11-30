@@ -77,7 +77,7 @@ export const getProductsForPagebuilderByUrlKeyParser = (data: any): GetProductsF
         products: {
             items: data.map((item: any) => ({
                 __typename: 'ConfigurableProduct',
-                uid: item.node.id,
+                uid: item.node.entityId.toString(),
                 id: item.node.entityId,
                 name: item.node.name,
                 url_suffix: '.html',
