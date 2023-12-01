@@ -2,13 +2,14 @@ import { GetPaymentMethodsQuery } from '@schema';
 
 export const getPaymentMethodsParser = (data: any, orderData): GetPaymentMethodsQuery => {
     const types = {
+        //Mirar los tipos de code que existen para Magento <- no tiene que ver
         // BigCommerce types: Manual, Credit Card, Cash,Test Payment Gateway, etc.
         store_credit: 'creditsystem',
         gift_certificate: 'giftcertificate', // TODO_B2BStore: Create a new file for gift certificate payments. This is MUST be changed
         card: 'banktransfer', // TODO_B2BStore: Check how to get the common credit card view
         braintree: 'braintree',
         bank_deposit: 'banktransfer',
-        'Credit Card': 'braintree',
+        //'Credit Card': 'braintree',
         Cash: 'creditsystem',
         scheme: 'braintree'
     };
