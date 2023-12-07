@@ -1,10 +1,50 @@
 import { ClientProps } from 'src';
 import { GetOrderDetailsQueryVariables } from '@schema';
+import { useCallback, useState } from 'react';
+
+import { getOrderDetailsParser } from './getOrderDetailsParser';
 
 const GetOrderDetails = (clientProps: ClientProps) => (resolverProps: GetOrderDetailsQueryVariables) => {
-    // Look docs for more info about how to fill this function
+    const { restClient } = clientProps;
 
-    return { data: {}, loading: false, error: undefined };
+    const [loading, setLoading] = useState(true);
+    const [data, setData] = useState(undefined);
+
+    const getOrderDetails = async ({ variables }) => {
+        setLoading(true);
+        try{
+            const { data: rawData } = await restClient(
+                `/api/v3/checkouts/${variables.cartId}?include=cart.line_items.physical_items.options,cart.line_items.digital_items.options`,
+                {
+                    method: 'GET',
+                    headers: {
+                        backendTechnology: 'bigcommerce'
+                    }
+                }
+            );
+            const orderData = await restClient(`/api/v2/orders?cart_id=${variables.cartId}&include=consignments`, {
+                method: 'GET',
+                headers: {
+                    backendTechnology: 'bigcommerce'
+                }
+            });
+            const addresses = await restClient(`/api/v2/orders/${orderData[0].id}/shipping_addresses`, {
+                method: 'GET',
+                headers: {
+                    backendTechnology: 'bigcommerce'
+                }
+            });
+    
+            setData(getOrderDetailsParser(rawData, addresses, orderData[0]));
+        }catch(err){
+            console.log("ERROR")
+            console.log(err)
+        }
+        
+        setLoading(false);
+    };
+
+    return { data, loading, getOrderDetails };
 };
 
 export default GetOrderDetails;
