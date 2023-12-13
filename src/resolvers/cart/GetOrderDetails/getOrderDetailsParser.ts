@@ -36,6 +36,7 @@ export const getOrderDetailsParser = (data: any, addresses: any, orderData: any)
                                   value: item.original_price,
                                   currency: data.cart.currency.code
                               },
+                              //Unnecessary data:
                               /*row_total: {
                                   __typename: 'Money',
                                   //Price before discounts
@@ -58,7 +59,7 @@ export const getOrderDetailsParser = (data: any, addresses: any, orderData: any)
                               },
                               categories: [
                                   {
-                                      name: 'PHYSICALCONFIGURED' // TODO_B2B: Get categories of the products
+                                      name: 'PHYSICALCONFIGURED'
                                   }
                               ]
                           },
@@ -80,6 +81,7 @@ export const getOrderDetailsParser = (data: any, addresses: any, orderData: any)
                                   value: item.original_price,
                                   currency: data.cart.currency.code
                               },
+                              //Unnecessary data:
                               /*row_total: {
                                   __typename: 'Money',
                                   value: item.extended_list_price - item.discount_amount // TODO_B2B: Check if list price is row total; row total=((ordered item price * ordered item qty) + Tax) - Discount
@@ -91,7 +93,7 @@ export const getOrderDetailsParser = (data: any, addresses: any, orderData: any)
                           },
                           product: {
                               __typename: 'SimpleProduct',
-                              uid: item.product_id,//item.variant_id,
+                              uid: item.product_id,
                               name: item.name,
                               sku: item.sku,
                               thumbnail: {
@@ -99,7 +101,7 @@ export const getOrderDetailsParser = (data: any, addresses: any, orderData: any)
                               },
                               categories: [
                                   {
-                                      name: 'PHYSICALSIMPLE' // TODO_B2B: Get categories of the products
+                                      name: 'PHYSICALSIMPLE'
                                   }
                               ]
                           },
@@ -121,6 +123,7 @@ export const getOrderDetailsParser = (data: any, addresses: any, orderData: any)
                                   value: item.original_price,
                                   currency: data.cart.currency.code
                               },
+                              //Unnecessary data:
                               /*row_total: {
                                   __typename: 'Money',
                                   value: item.extended_list_price - item.discount_amount // TODO_B2B: Check if list price is row total; row total=((ordered item price * ordered item qty) + Tax) - Discount
@@ -140,7 +143,7 @@ export const getOrderDetailsParser = (data: any, addresses: any, orderData: any)
                               },
                               categories: [
                                   {
-                                      name: 'VIRTUALCONFIGURED' // TODO_B2B: Get categories of the products
+                                      name: 'VIRTUALCONFIGURED'
                                   }
                               ]
                           },
@@ -160,9 +163,9 @@ export const getOrderDetailsParser = (data: any, addresses: any, orderData: any)
                               price: {
                                   __typename: 'Money',
                                   value: item.original_price,
-                                  //Cart issue? data.currency.code
                                   currency: data.cart.currency.code
                               },
+                              //Unnecessary data:
                               /*row_total: {
                                   __typename: 'Money',
                                   value: item.extended_list_price - item.discount_amount // TODO_B2B: Check if list price is row total; row total=((ordered item price * ordered item qty) + Tax) - Discount
@@ -182,7 +185,7 @@ export const getOrderDetailsParser = (data: any, addresses: any, orderData: any)
                               },
                               categories: [
                                   {
-                                      name: 'PHYSICALSIMPLE' // TODO_B2B: Get categories of the products
+                                      name: 'PHYSICALSIMPLE'
                                   }
                               ]
                           },
@@ -191,7 +194,6 @@ export const getOrderDetailsParser = (data: any, addresses: any, orderData: any)
             });
         }
 
-        //El mismo que el de SimpleProduct, pero utiliza el id del carrito
         /*if (data.cart.line_items.physical_items) {
             data.cart.line_items.physical_items.map((item: any) => {
                 items.push({
@@ -260,13 +262,15 @@ export const getOrderDetailsParser = (data: any, addresses: any, orderData: any)
                         currency: orderData.currency_code
                     },
                     //(Specifies the type of shipping option, such as flat rate, UPS, etc).
-                    carrier_title: data.consignments[0].selected_shipping_option.type.split(" - ")[0], // TODO_B2B: Find and get carrier_title equivalent 
+                    //Used in useOrderConfirmationPage.js
+                    carrier_title: data.consignments[0].selected_shipping_option.type,
                     method_title: address.shipping_method
                 }
             })),
             selected_payment_method: {
                 // TODO_B2B: Check how to get the selected payment method (if necessary)
-                purchase_order_number: "FUEGO FUEGO", // TODO_B2B: Check what it is and get its BigCommerce equivalent
+                //Unnecessary data:
+                //purchase_order_number: "FUEGO FUEGO", // TODO_B2B: Check what it is and get its BigCommerce equivalent
                 title: orderData.payment_method
             },
             prices: {
