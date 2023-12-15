@@ -54,7 +54,7 @@ export const getMiniCartParser = ({ data }: any): GetMiniCartQuery => {
                               variants: [
                                   {
                                       attributes: item.options.map((variant: any) => ({
-                                          uid: variant.nameId,
+                                          uid: variant.valueId,
                                           label: variant.value
                                       })),
                                       product: {
@@ -140,7 +140,7 @@ export const getMiniCartParser = ({ data }: any): GetMiniCartQuery => {
                               variants: item.options.map((variant: any) => ({
                                   attributes: [
                                       {
-                                          uid: variant.nameId,
+                                          uid: variant.valueId,
                                           label: variant.value
                                       }
                                   ],

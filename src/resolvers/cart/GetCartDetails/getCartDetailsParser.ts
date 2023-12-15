@@ -72,7 +72,7 @@ export const getCartDetailsParser = ({ data }: any): GetCartDetailsQuery => {
                               variants: [
                                   {
                                       attributes: item.options.map((variant: any) => ({
-                                          uid: variant.nameId,
+                                          uid: variant.valueId,
                                           label: variant.value,
                                           code: variant.name,
                                           value_index: variant.valueId
@@ -206,7 +206,7 @@ export const getCartDetailsParser = ({ data }: any): GetCartDetailsQuery => {
                               variants: item.options.map((variant: any) => ({
                                   attributes: [
                                       {
-                                          uid: variant.nameId,
+                                          uid: variant.valueId,
                                           label: variant.value,
                                           code: variant.name,
                                           value_index: variant.valueId
