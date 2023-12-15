@@ -1,7 +1,25 @@
 import { gql } from '@apollo/client';
 
 export const GET_CMS_PAGE = gql`
-    # Your query here
+    query GetCmsPage ($identifier: Int!){
+        site{
+            content{
+                page(entityId:$identifier){
+                    __typename
+                    entityId
+                    name
+                    seo{
+                        pageTitle
+                        metaDescription
+                        metaKeywords
+                    }
+                    ... on NormalPage{
+                        htmlBody
+                    }
+                }
+            }
+        }
+}
 `;
 
 export default {
