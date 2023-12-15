@@ -1,10 +1,98 @@
 import { ClientProps } from 'src';
 import { AddConfigurableProductsToQuoteMutationVariables } from '@schema';
 
-const AddConfigurableProductsToQuote = (clientProps: ClientProps) => (resolverProps: AddConfigurableProductsToQuoteMutationVariables) => {
-    // Look docs for more info about how to fill this function
+import { addConfigurableProductsToQuoteParser } from './addConfigurableProductsToQuoteParser';
+import DEFAULT_OPERATIONS from './addConfigurableProductsToQuote.gql';
+import moment from 'moment';
 
-    return { data: {}, loading: false, error: undefined };
+const AddConfigurableProductsToQuote = (clientProps: ClientProps) => (resolverProps: AddConfigurableProductsToQuoteMutationVariables) => {
+    const { restClient, mergeOperations, useAwaitQuery } = clientProps;
+    const { getProductAndVariantIdsQuery } = mergeOperations(DEFAULT_OPERATIONS);
+    const getProduct = useAwaitQuery(getProductAndVariantIdsQuery);
+
+    const addConfigProductToQuote = async ({ variables }) => {
+        let parsedData = undefined;
+        let totalPrice = 0;
+        let totalQty = 0;
+
+        const localDate = moment.utc().local();
+        localDate.add(1, 'month');
+        const localExpiredAt = localDate.format('MM/DD/YYYY');
+
+        const products = await Promise.all(
+            variables.input.cart_items.map(async (item) => {
+                const { data } = await getProduct({
+                    context: {
+                        headers: {
+                            backendTechnology: ['bigcommerce']
+                        }
+                    },
+                    variables: {
+                        sku: item.data.sku
+                    }
+                });
+
+                return {
+                    entityId: data.site.product.entityId,
+                    sku: item.data.sku,
+                    variantId: data.site.product.variants.edges.find((p) => p.node.sku === item.data.sku).node.entityId,
+                    quantity: item.data.quantity,
+                    price: data.site.product.variants.edges.find((p) => p.node.sku === item.data.sku).node.prices.price.value,
+                    basePrice: data.site.product.variants.edges.find((p) => p.node.sku === item.data.sku).node.prices.basePrice.value
+                };
+            })
+        );
+
+        products.forEach((prod: any) => {
+            totalPrice = totalPrice + prod.price * prod.quantity;
+            totalQty = totalQty + prod.quantity;
+        });
+
+        const { data: quoteCreated } = await restClient(`/api/v3/io/rfq`, {
+            method: 'POST',
+            headers: {
+                backendTechnology: 'bigcommerceb2b'
+            },
+            body: JSON.stringify({
+                message: 'testing from B2BStore',
+                grandTotal: totalPrice,
+                discount: 0,
+                subtotal: totalPrice,
+                userEmail: 'dgonzalez@orienteed.com',
+                quoteTitle: 'testingAPIquote',
+                expiredAt: localExpiredAt,
+                contactInfo: {
+                    name: 'David',
+                    email: 'dgonzalez@orienteed.com',
+                    companyName: 'Orienteed',
+                    phoneNumber: '123456789'
+                },
+                productList: products.map((prod: any) => ({
+                    sku: prod.sku,
+                    basePrice: prod.basePrice,
+                    discount: 0.0,
+                    offeredPrice: prod.price,
+                    quantity: prod.quantity,
+                    productId: prod.entityId,
+                    variantId: prod.variantId
+                })),
+                channelId: 1
+            })
+        });
+
+        const { data: quoteData } = await restClient(`/api/v3/io/rfq/${quoteCreated.quoteId}`, {
+            method: 'GET',
+            headers: {
+                backendTechnology: 'bigcommerceb2b'
+            }
+        });
+
+        parsedData = addConfigurableProductsToQuoteParser(quoteData, quoteCreated.quoteId, totalQty);
+
+        return { data: parsedData };
+    };
+
+    return { addConfigProductToQuote };
 };
 
 export default AddConfigurableProductsToQuote;
