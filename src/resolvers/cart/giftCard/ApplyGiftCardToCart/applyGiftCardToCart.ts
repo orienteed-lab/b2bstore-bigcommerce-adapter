@@ -61,8 +61,13 @@ const ApplyGiftCardToCart = (clientProps: ClientProps) => (resolverProps: ApplyG
                 */  
             //Posible solution: edit cookies on DevTools and set them to SameSite=None and enable the Security field 
 
+            //FINAL SOLUTION: use allow CORS: Access-Control-Allow-Origin chrome extension to do the CORS handshake (modify the response headers mentioned above).
+            //Problem: preflight fails with 404, but the endpoint exist and it's used on the bigcommerce storefront
+            //Possible solutions: 
+                //-opened thread in bigcommerce forum: https://support.bigcommerce.com/s/question/0D5TS000002GMZq0AO/404-http-error-on-preflight-request-to-add-gift-certificate-to-checkout-rest-endpoint?language=en_US
+                //-Make b2bstore HTTPS
+
             const data = await restClient(`https://${storeURI}/api/storefront/checkouts/${variables.cartId}/gift-certificates`, {
-                //?include=line_items.physical_items.options,line_items.digital_items.options
                 method: 'POST',
                 headers: {
                     backendTechnology: 'bigcommerce',
