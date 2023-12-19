@@ -6,6 +6,7 @@ export const GET_PRODUCT_AND_VARIANT_IDS = gql`
             product(sku:$sku) {
                 entityId
                 sku
+                name
                 variants {
                     edges {
                         node {
@@ -17,6 +18,19 @@ export const GET_PRODUCT_AND_VARIANT_IDS = gql`
                                 }
                                 basePrice {
                                     value
+                                }
+                            }
+                            options {
+                                edges {
+                                    node {
+                                        values {
+                                            edges {
+                                                node {
+                                                    label
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }

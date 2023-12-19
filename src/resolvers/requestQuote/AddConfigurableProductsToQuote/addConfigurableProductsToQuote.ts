@@ -28,17 +28,20 @@ const AddConfigurableProductsToQuote = (clientProps: ClientProps) => (resolverPr
                         }
                     },
                     variables: {
-                        sku: item.data.sku
+                        sku: item.data.sku || item.parent_sku
                     }
                 });
 
                 return {
                     entityId: data.site.product.entityId,
-                    sku: item.data.sku,
-                    variantId: data.site.product.variants.edges.find((p) => p.node.sku === item.data.sku).node.entityId,
+                    sku: item.data.sku || item.parent_sku,
+                    variantId: data.site.product.variants.edges.find((p) => p.node.sku === (item.data.sku || item.parent_sku)).node.entityId,
                     quantity: item.data.quantity,
-                    price: data.site.product.variants.edges.find((p) => p.node.sku === item.data.sku).node.prices.price.value,
-                    basePrice: data.site.product.variants.edges.find((p) => p.node.sku === item.data.sku).node.prices.basePrice.value
+                    price: data.site.product.variants.edges.find((p) => p.node.sku === (item.data.sku || item.parent_sku)).node.prices.price.value,
+                    basePrice: data.site.product.variants.edges.find((p) => p.node.sku === (item.data.sku || item.parent_sku)).node.prices.basePrice.value,
+                    name: item.data.sku ? `${data.site.product.name} ${data.site.product.variants.edges.find((p) => p.node.sku === item.data.sku).node.options.edges.map(
+                        (attribute: any) => attribute.node.values.edges[0].node.label
+                    )}` : data.site.product.name
                 };
             })
         );
@@ -55,9 +58,9 @@ const AddConfigurableProductsToQuote = (clientProps: ClientProps) => (resolverPr
             },
             body: JSON.stringify({
                 message: 'testing from B2BStore',
-                grandTotal: totalPrice,
+                grandTotal: totalPrice.toFixed(2),
                 discount: 0,
-                subtotal: totalPrice,
+                subtotal: totalPrice.toFixed(2),
                 userEmail: 'dgonzalez@orienteed.com',
                 quoteTitle: 'testingAPIquote',
                 expiredAt: localExpiredAt,
@@ -74,7 +77,9 @@ const AddConfigurableProductsToQuote = (clientProps: ClientProps) => (resolverPr
                     offeredPrice: prod.price,
                     quantity: prod.quantity,
                     productId: prod.entityId,
-                    variantId: prod.variantId
+                    variantId: prod.variantId,
+                    imageUrl: prod.image,
+                    productName: prod.name
                 })),
                 channelId: 1
             })
