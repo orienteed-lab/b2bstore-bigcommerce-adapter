@@ -193,47 +193,6 @@ export const getOrderDetailsParser = (data: any, addresses: any, orderData: any)
                       });
             });
         }
-
-        /*if (data.cart.line_items.physical_items) {
-            data.cart.line_items.physical_items.map((item: any) => {
-                items.push({
-                    __typename: 'SimpleCartItem',
-                    uid: item.id,
-                    prices: {
-                        __typename: 'ProductPrices',
-                        price: {
-                            __typename: 'Money',
-                            value: item.list_price,
-                            currency: data.cart.currency.code // TODO_B2B: Get currency
-                        },
-                        row_total: {
-                            __typename: 'Money',
-                            value: item.extended_list_price - item.discount_amount // TODO_B2B: Check if list price is row total; row total=((ordered item price * ordered item qty) + Tax) - Discount
-                        },
-                        total_item_discount: {
-                            __typename: 'Money',
-                            value: 0
-                        }
-                    },
-                    product: {
-                        __typename: 'SimpleProduct',
-                        uid: item.id,
-                        name: item.name,
-                        sku: item.sku,
-                        thumbnail: {
-                            url: item.image_url // TODO_B2B: Reduce size of the image
-                        },
-                        categories: [
-                            {
-                                name: 'PHYSICALPHYSICALSIMPLE' // TODO_B2B: Get categories of the products
-                            }
-                        ]
-                    },
-                    quantity: item.quantity
-                });
-            });
-        }*/
-
         return items;
     };
 
