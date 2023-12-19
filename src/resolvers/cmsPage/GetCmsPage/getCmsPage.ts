@@ -32,7 +32,7 @@ const GetCmsPage = (clientProps: ClientProps) => (resolverProps: GetCmsPageQuery
                     identifier: 6
                 }
             });
-            setData(getCmsPageParser(cmsData));
+            setData(getCmsPageParser(cmsData, identifier));
         } catch (err) {
             setError(err);
         }
