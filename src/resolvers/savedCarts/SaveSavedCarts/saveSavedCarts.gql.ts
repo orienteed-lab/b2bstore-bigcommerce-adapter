@@ -1,9 +1,13 @@
 import { gql } from '@apollo/client';
 
-export const SAVE_CART = gql`
-    # Your query here
+export const GET_USER_ID = gql`
+    query getUserId {
+        customer {
+            email
+        }
+    }
 `;
 
 export default {
-    saveSavedCartsMutation: SAVE_CART
+    getUserIdQuery: GET_USER_ID
 };
