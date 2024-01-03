@@ -2,9 +2,19 @@ import { ClientProps } from 'src';
 import { DeleteSavedCartsMutationVariables } from '@schema';
 
 const DeleteSavedCarts = (clientProps: ClientProps) => (resolverProps: DeleteSavedCartsMutationVariables) => {
-    // Look docs for more info about how to fill this function
+    const { restClient } = clientProps;
+    const { token } = resolverProps;
 
-    return { data: {}, loading: false, error: undefined };
+    const deleteSaveCart = async () => {
+        await restClient(`/api/v3/io/shopping-list/${token}`, {
+            method: 'DELETE',
+            headers: {
+                backendTechnology: 'bigcommerceb2b'
+            }
+        });
+    };
+
+    return { deleteSaveCart };
 };
 
 export default DeleteSavedCarts;
