@@ -1,9 +1,9 @@
 import { ClientProps } from 'src';
 
-const GetConfigDetailsForSavedCarts = (clientProps: ClientProps) => () => {
-    // Look docs for more info about how to fill this function
+import { getConfigDetailsForSavedCartsParser } from './getConfigDetailsForSavedCartsParser';
 
-    return { data: {}, loading: false, error: undefined };
+const GetConfigDetailsForSavedCarts = (clientProps: ClientProps) => () => {
+    return { data: getConfigDetailsForSavedCartsParser() };
 };
 
 export default GetConfigDetailsForSavedCarts;
