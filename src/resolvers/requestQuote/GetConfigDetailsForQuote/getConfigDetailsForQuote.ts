@@ -1,9 +1,31 @@
+import { useEffect, useState } from 'react';
 import { ClientProps } from 'src';
 
 const GetConfigDetailsForQuote = (clientProps: ClientProps) => () => {
-    // Look docs for more info about how to fill this function
+    const { restClient } = clientProps;
+    const [data, setData] = useState(undefined);
+    const [loading, setLoading] = useState(true);
 
-    return { data: {}, loading: false, error: undefined };
+    useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+
+            const quotes = await restClient(`/api/v3/io/rfq`, {
+                method: 'GET',
+                headers: {
+                    backendTechnology: 'bigcommerceb2b'
+                }
+            });
+            if (quotes.code === 200) {
+                setData(quotes.data);
+            }
+
+            setLoading(false);
+        };
+        fetchData();
+    }, []);
+
+    return { data, loading };
 };
 
 export default GetConfigDetailsForQuote;
